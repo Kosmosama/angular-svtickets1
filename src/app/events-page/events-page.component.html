@@ -1,33 +1,54 @@
 <form action="#" class="mt-4" id="newEvent">
     <div class="mb-3">
-        <label for="title" class="form-label">Title</label>
-        <input type="text" class="form-control" name="title" id="title" placeholder="Enter title" />
-        <div class="invalid-feedback">
-            Title is required and can only contain letters and spaces.
-        </div>
+      <label for="title" class="form-label">Title</label>
+      <input type="text" class="form-control" name="title" id="title" placeholder="Enter title" [(ngModel)]="newEvent.title">
+      <div class="invalid-feedback">Title is required and can only contain letters and spaces.</div>
     </div>
     <div class="mb-3">
-        <label for="date" class="form-label">Date</label>
-        <input type="date" class="form-control" id="date" name="date" />
-        <div class="invalid-feedback">Date is required.</div>
+      <label for="date" class="form-label">Date</label>
+      <input type="date" class="form-control" id="date" name="date" [(ngModel)]="newEvent.date">
+      <div class="invalid-feedback">Date is required.</div>
     </div>
     <div class="mb-3">
-        <label for="description" class="form-label">Description</label>
-        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-        <div class="invalid-feedback">Description is required.</div>
+      <label for="description" class="form-label">Description</label>
+      <textarea class="form-control" id="description" name="description" rows="3" [(ngModel)]="newEvent.description"></textarea>
+      <div class="invalid-feedback">Description is required.</div>
     </div>
     <div class="mb-3">
-        <label for="price" class="form-label">Price (in €)</label>
-        <input type="number" class="form-control" id="price" name="price" min="0.00" max="10000.00" step="0.01" />
-        <div class="invalid-feedback">Price must be a positive number.</div>
+      <label for="price" class="form-label">Price (in €)</label>
+      <input type="number" class="form-control" id="price" name="price" min="0.00" max="10000.00" step="0.01" [(ngModel)]="newEvent.price"/>
+      <div class="invalid-feedback">Price must be a positive number.</div>
     </div>
     <div class="mb-3">
-        <label for="image" class="form-label">Image</label>
-        <input type="file" class="form-control" id="image" name="image" />
-        <div class="invalid-feedback">An image is required.</div>
+      <label for="image" class="form-label">Image</label>
+      <input type="file" class="form-control" id="image" name="image" ngModel #fileImage (change)="changeImage(fileImage)" >
+      <div class="invalid-feedback">An image is required.</div>
     </div>
-    <img src="" alt="" id="imgPreview" class="img-thumbnail mb-3 d-none" />
+
+    @if ( newEvent.image ){
+        <img src="" alt="" id="imgPreview" class="img-thumbnail mb-3 d-none" [src]="newEvent.image">
+    }
+    
     <div>
-        <button type="submit" class="btn btn-primary">Create</button>
+      <button type="submit" class="btn btn-primary" (ngSubmit)="addEvent()">Create</button>
     </div>
 </form>
+
+<div id="eventsContainer" class="mb-4 mt-4 row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+    @for (product of events; track product) {
+        <div class="col">
+            <div class="card shadow">
+                <img class="card-img-top" src={{ product.image }} alt="image">
+                <div class="card-body">
+                    <h4 class="card-title">{{ product.title }}</h4>
+                    <p class="card-text">{{ product.description }}</p>
+                    <button class="btn btn-danger delete"><i class="bi bi-trash"></i></button>
+                </div>
+                <div class="card-footer text-muted row m-0">
+                    <div class="col">{{ product.date }}</div>
+                    <div class="col text-end">{{ product.price }} €</div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

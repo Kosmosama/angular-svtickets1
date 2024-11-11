@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { MyEvent } from '../my-event';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'events-page',
     standalone: true,
-    imports: [],
+    imports: [FormsModule],
     templateUrl: './events-page.component.html',
     styleUrl: './events-page.component.css',
 })
@@ -18,4 +19,22 @@ export class EventsPageComponent {
         image: '',
         date: '',
     };
+
+    addEvent() {
+        if (this.newEvent.title && this.newEvent.date && this.newEvent.description && this.newEvent.price > 0) {
+          const eventToPush = { ...this.newEvent, id: this.events.length + 1 };
+          this.events.push(eventToPush);
+
+          this.newEvent = { title: '', description: '', price: 0, image: '', date: '' };
+        }
+    }
+
+    changeImage(fileInput: HTMLInputElement) {
+        if (!fileInput.files || fileInput.files.length === 0) { return; }
+            const reader: FileReader = new FileReader();
+            reader.readAsDataURL(fileInput.files[0]);
+            reader.addEventListener('loadend', () => {
+            this.newEvent.image = reader.result as string;
+        });
+    }   
 }
