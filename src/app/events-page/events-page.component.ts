@@ -21,11 +21,13 @@ export class EventsPageComponent {
     };
 
     addEvent() {
-        if (this.newEvent.title && this.newEvent.date && this.newEvent.description && this.newEvent.price > 0) {
+        if (this.newEvent.title && this.newEvent.date && this.newEvent.description && this.newEvent.price > 0 && this.newEvent.image) {
           const eventToPush = { ...this.newEvent, id: this.events.length + 1 };
           this.events.push(eventToPush);
 
           this.newEvent = { title: '', description: '', price: 0, image: '', date: '' };
+
+          (document.getElementById("newEvent") as HTMLFormElement).reset();
         }
     }
 
@@ -36,5 +38,9 @@ export class EventsPageComponent {
             reader.addEventListener('loadend', () => {
             this.newEvent.image = reader.result as string;
         });
-    }   
+    }
+
+    deleteEvent(eventId: number) {
+        this.events = this.events.filter(event => event.id !== eventId);
+    }
 }
