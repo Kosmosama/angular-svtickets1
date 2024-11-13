@@ -33,9 +33,9 @@ export class EventsPageComponent {
 
     changeImage(fileInput: HTMLInputElement) {
         if (!fileInput.files || fileInput.files.length === 0) { return; }
-            const reader: FileReader = new FileReader();
-            reader.readAsDataURL(fileInput.files[0]);
-            reader.addEventListener('loadend', () => {
+        const reader: FileReader = new FileReader();
+        reader.readAsDataURL(fileInput.files[0]);
+        reader.addEventListener('loadend', () => {
             this.newEvent.image = reader.result as string;
         });
     }
