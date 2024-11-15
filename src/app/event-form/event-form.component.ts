@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, output, } from '@angular/core';
 import { MyEvent } from '../my-event';
 import { FormsModule } from '@angular/forms';
 
@@ -10,8 +10,10 @@ import { FormsModule } from '@angular/forms';
     styleUrl: './event-form.component.css'
 })
 export class EventFormComponent {
-    @Output() added = new EventEmitter<MyEvent>();
+    added = output<MyEvent>();
+    #changeDetector = inject(ChangeDetectorRef);
     id = 1;
+    generator = this.generate();
 
     public *generate(): Generator<number, number, unknown> {
         while (true) {
@@ -27,16 +29,10 @@ export class EventFormComponent {
         date: '',
     };
 
-    generator = this.generate();
-
     addEvent() {
         if (this.newEvent.title && this.newEvent.date && this.newEvent.description && this.newEvent.price > 0 && this.newEvent.image) {
-            const eventToPush = { ...this.newEvent, id: this.generator.next().value }; // this.events.length + 1
-            this.added.emit(eventToPush);
-
-            this.newEvent = { title: '', description: '', price: 0, image: '', date: '' };
-
-            (document.getElementById("newEvent") as HTMLFormElement).reset();
+            this.added.emit({ ...this.newEvent, id: this.generator.next().value });
+            this.resetEvent();
         }
     }
 
@@ -46,6 +42,12 @@ export class EventFormComponent {
         reader.readAsDataURL(fileInput.files[0]);
         reader.addEventListener('loadend', () => {
             this.newEvent.image = reader.result as string;
+            this.#changeDetector.markForCheck();
         });
+    }
+
+    resetEvent() {
+        this.newEvent = { title: '', description: '', price: 0, image: '', date: '' };
+        (document.getElementById("newEvent") as HTMLFormElement).reset();
     }
 }

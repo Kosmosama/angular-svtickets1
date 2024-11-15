@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { MyEvent } from '../my-event';
 import { DatePipe } from '@angular/common';
 import { IntlCurrencyPipe } from '../intl-currency.pipe';
@@ -11,10 +11,10 @@ import { IntlCurrencyPipe } from '../intl-currency.pipe';
     styleUrl: './event-card.component.css'
 })
 export class EventCardComponent {
-    @Input({required: true}) event!: MyEvent;
-    @Output() deleted = new EventEmitter<number>();
+    event = input.required<MyEvent>();
+    deleted = output<number>();
 
     deleteEvent() {
-        this.deleted.emit(this.event.id);
+        this.deleted.emit(this.event().id!);
     }
 }

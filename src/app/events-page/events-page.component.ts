@@ -12,6 +12,7 @@ import { EventCardComponent } from '../event-card/event-card.component';
 })
 export class EventsPageComponent {
     events: MyEvent[] = [];
+    filteredEvents: MyEvent[] = this.events;
 
     addEvent(event: MyEvent) {
         this.events.push(event);
@@ -19,5 +20,5 @@ export class EventsPageComponent {
 
     deleteEvent(id: number) {
         this.events = this.events.filter(event => event.id !== id);
-    }    
+    }
 }
