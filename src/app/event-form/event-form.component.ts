@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject, output, } from '@angular/core';
-import { MyEvent } from '../my-event';
+import { MyEvent } from '../interfaces/my-event';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -15,6 +15,7 @@ export class EventFormComponent {
     id = 1;
     generator = this.generate();
 
+    // Could be done in the events-page easily but I've always wanted to use a generator function
     public *generate(): Generator<number, number, unknown> {
         while (true) {
             yield this.id++;

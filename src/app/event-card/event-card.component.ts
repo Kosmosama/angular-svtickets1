@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { MyEvent } from '../my-event';
+import { MyEvent } from '../interfaces/my-event';
 import { DatePipe } from '@angular/common';
 import { IntlCurrencyPipe } from '../intl-currency.pipe';
 
