@@ -1,17 +1,17 @@
-import { ChangeDetectorRef, Component, inject, output, } from '@angular/core';
-import { MyEvent } from '../interfaces/my-event';
-import { FormsModule } from '@angular/forms';
+import { Component, output } from "@angular/core";
+import { MyEvent } from "../interfaces/my-event";
+import { FormsModule } from "@angular/forms";
+import { EncodeBase64Directive } from "../directives/encode-base64.directive";
 
 @Component({
-    selector: 'event-form',
+    selector: "event-form",
     standalone: true,
-    imports: [FormsModule],
-    templateUrl: './event-form.component.html',
-    styleUrl: './event-form.component.css'
+    imports: [FormsModule,EncodeBase64Directive],
+    templateUrl: "./event-form.component.html",
+    styleUrl: "./event-form.component.css"
 })
 export class EventFormComponent {
     added = output<MyEvent>();
-    #changeDetector = inject(ChangeDetectorRef);
     id = 1;
     generator = this.generate();
 
@@ -23,11 +23,11 @@ export class EventFormComponent {
     }
 
     newEvent: MyEvent = {
-        title: '',
-        description: '',
+        title: "",
+        description: "",
         price: 0,
-        image: '',
-        date: '',
+        image: "",
+        date: "",
     };
 
     addEvent() {
@@ -37,18 +37,8 @@ export class EventFormComponent {
         }
     }
 
-    changeImage(fileInput: HTMLInputElement) {
-        if (!fileInput.files || fileInput.files.length === 0) { return; }
-        const reader: FileReader = new FileReader();
-        reader.readAsDataURL(fileInput.files[0]);
-        reader.addEventListener('loadend', () => {
-            this.newEvent.image = reader.result as string;
-            this.#changeDetector.markForCheck();
-        });
-    }
-
     resetEvent() {
-        this.newEvent = { title: '', description: '', price: 0, image: '', date: '' };
+        this.newEvent = { title: "", description: "", price: 0, image: "", date: "" };
         (document.getElementById("newEvent") as HTMLFormElement).reset();
     }
 }

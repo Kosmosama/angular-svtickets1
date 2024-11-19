@@ -24,8 +24,7 @@
     </div>
     <div class="mb-3">
         <label for="image" class="form-label">Image</label>
-        <input type="file" class="form-control" id="image" name="image" ngModel #fileImage
-            (change)="changeImage(fileImage)">
+        <input type="file" class="form-control" id="image" name="image" encodeBase64 (encoded)="newEvent.image = $event">
         <div class="invalid-feedback">An image is required.</div>
     </div>
 
