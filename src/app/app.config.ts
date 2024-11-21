@@ -1,9 +1,10 @@
 import { ApplicationConfig, provideExperimentalZonelessChangeDetection } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { baseUrlInterceptor } from './interceptors/base-url.interceptor';
 // import { provideRouter } from '@angular/router';
 
 // import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideExperimentalZonelessChangeDetection(), provideHttpClient()]
+  providers: [provideExperimentalZonelessChangeDetection(), provideHttpClient(withInterceptors([baseUrlInterceptor]))]
 };

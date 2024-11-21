@@ -1,7 +1,8 @@
-import { Component, output } from "@angular/core";
+import { Component, inject, output } from "@angular/core";
 import { MyEvent } from "../interfaces/my-event";
 import { FormsModule } from "@angular/forms";
 import { EncodeBase64Directive } from "../directives/encode-base64.directive";
+import { EventsService } from "../services/events.service";
 
 @Component({
     selector: "event-form",
@@ -11,16 +12,8 @@ import { EncodeBase64Directive } from "../directives/encode-base64.directive";
     styleUrl: "./event-form.component.css"
 })
 export class EventFormComponent {
+    private eventsService = inject(EventsService);
     added = output<MyEvent>();
-    id = 1;
-    generator = this.generate();
-
-    // Could be done in the events-page easily but I've always wanted to use a generator function
-    public *generate(): Generator<number, number, unknown> {
-        while (true) {
-            yield this.id++;
-        }
-    }
 
     newEvent: MyEvent = {
         title: "",
@@ -30,15 +23,23 @@ export class EventFormComponent {
         date: "",
     };
 
-    addEvent() {
-        if (this.newEvent.title && this.newEvent.date && this.newEvent.description && this.newEvent.price > 0 && this.newEvent.image) {
-            this.added.emit({ ...this.newEvent, id: this.generator.next().value });
-            this.resetEvent();
-        }
+    /**
+     * Adds a new event.
+     */
+    addEvent(): void {
+        this.eventsService.addEvent(this.newEvent)
+            .subscribe(() => {
+                this.added.emit(this.newEvent);
+                this.resetForm();
+            });
     }
 
-    resetEvent() {
+    /**
+     * Resets the form fields.
+     */
+    private resetForm(): void {
         this.newEvent = { title: "", description: "", price: 0, image: "", date: "" };
-        (document.getElementById("newEvent") as HTMLFormElement).reset();
+        const form = document.getElementById("newEvent") as HTMLFormElement | null;
+        if (form) form.reset();
     }
 }
