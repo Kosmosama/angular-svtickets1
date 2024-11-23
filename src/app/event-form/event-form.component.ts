@@ -1,8 +1,9 @@
-import { Component, inject, output } from "@angular/core";
+import { Component, DestroyRef, inject, output } from "@angular/core";
 import { MyEvent } from "../interfaces/my-event";
 import { FormsModule } from "@angular/forms";
 import { EncodeBase64Directive } from "../directives/encode-base64.directive";
 import { EventsService } from "../services/events.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
     selector: "event-form",
@@ -13,6 +14,8 @@ import { EventsService } from "../services/events.service";
 })
 export class EventFormComponent {
     private eventsService = inject(EventsService);
+    private destroyRef = inject(DestroyRef);
+
     added = output<MyEvent>();
 
     newEvent: MyEvent = {
@@ -20,18 +23,22 @@ export class EventFormComponent {
         description: "",
         price: 0,
         image: "",
-        date: "",
+        date: ""
     };
+    // initializeEvent()
 
     /**
-     * Adds a new event.
+     * Handles adding a new event by interacting with the EventsService.
+     * Emits the added event and resets the form upon success.
      */
     addEvent(): void {
         this.eventsService.addEvent(this.newEvent)
-            .subscribe(() => {
-                this.added.emit(this.newEvent);
-                this.resetForm();
-            });
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((something) => {
+            console.log(something);
+            this.added.emit(something); //#TODO
+            this.resetForm();
+        });
     }
 
     /**
@@ -41,5 +48,19 @@ export class EventFormComponent {
         this.newEvent = { title: "", description: "", price: 0, image: "", date: "" };
         const form = document.getElementById("newEvent") as HTMLFormElement | null;
         if (form) form.reset();
+    }
+
+    /**
+     * Initializes a blank event object.
+     * @returns A new event with default values.
+     */
+    private initializeEvent(): MyEvent {
+        return {
+            title: "",
+            description: "",
+            price: 0,
+            image: "",
+            date: "",
+        };
     }
 }

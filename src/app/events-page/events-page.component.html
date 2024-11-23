@@ -2,10 +2,10 @@
     <div class="container-fluid">
       <ul class="nav">
         <li class="nav-item">
-          <a class="nav-link" href="#" id="orderDate" (click)="orderByDate()">Order by date</a>
+          <a class="nav-link" href="#" id="orderDate" (click)="orderBy('date')">Order by date</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#" id="orderPrice" (click)="orderByPrice()">Order by price</a>
+          <a class="nav-link" href="#" id="orderPrice" (click)="orderBy('price')">Order by price</a>
         </li>
       </ul>
       <form class="d-flex mb-0">
@@ -18,7 +18,7 @@
 <event-form (added)="addEvent($event)"></event-form>
 
 <div id="eventsContainer" class="mb-4 mt-4 row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-    @for (event of filteredEvents(); track event) {
+    @for (event of filteredEvents(); track event.id) {
         <event-card [event]="event" (deleted)="deleteEvent($event)"></event-card>
     }
 </div>
