@@ -15,10 +15,10 @@
     </div>
 </nav>
 
-<event-form (added)="addEvent($event)"></event-form>
+<event-form (added)="handleEventAdded($event)"></event-form>
 
 <div id="eventsContainer" class="mb-4 mt-4 row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
     @for (event of filteredEvents(); track event.id) {
-        <event-card [event]="event" (deleted)="deleteEvent($event)"></event-card>
+        <event-card [event]="event" (deleted)="handleEventDeleted($event)"></event-card>
     }
 </div>

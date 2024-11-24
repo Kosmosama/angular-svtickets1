@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, signal } from "@angular/core";
+import { Component, DestroyRef, computed, inject, signal } from "@angular/core";
 import { MyEvent } from "../interfaces/my-event";
 import { EventFormComponent } from "../event-form/event-form.component";
 import { EventCardComponent } from "../event-card/event-card.component";
@@ -23,19 +23,19 @@ export class EventsPageComponent {
     filteredEvents = computed(() => {
         const search = this.searchValue().toLowerCase().trim();
         const criteria = this.orderCriteria();
-        
+
         // Filter based on search value
         let filtered = this.events().filter(event =>
             event.title.toLowerCase().includes(search) || event.description.toLowerCase().includes(search)
         );
-        
+
         // Apply sorting based on criteria
         if (criteria === 'date') {
             filtered = filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         } else if (criteria === 'price') {
             filtered = filtered.sort((a, b) => a.price - b.price);
         }
-    
+
         return filtered;
     });
 
@@ -44,13 +44,12 @@ export class EventsPageComponent {
     }
     
     /**
-     * Adds a new event to the local events state.
+     * Adds a new event to the local state.
      * 
-     * @param event The event to be added.
+     * @param {MyEvent} event The event to be added.
      */
-    addEvent(event: MyEvent): void {
-        // console.log(event);
-        this.events.update(events => [...events, event]);
+    handleEventAdded(event: MyEvent): void {
+        this.events.update(currentEvents => [...currentEvents, event]);
     }
 
     /**
@@ -67,10 +66,9 @@ export class EventsPageComponent {
      * 
      * @param id The ID of the event to delete.
      */
-    deleteEvent(id: number): void {
-        console.log("Id: " + id);
+    handleEventDeleted(id: number): void {
         this.eventsService.deleteEvent(id)
-        .pipe(takeUntilDestroyed(this.destroyRef))
+        .pipe(takeUntilDestroyed(this.destroyRef)) // #TODO Remove from array or re-fetch?
         .subscribe(() => this.fetchEvents());
     }
 

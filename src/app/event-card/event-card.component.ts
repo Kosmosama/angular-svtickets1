@@ -14,6 +14,9 @@ export class EventCardComponent {
     event = input.required<MyEvent>();
     deleted = output<number>();
 
+    /**
+     * Emists its own id as a signal once the delete button is pressed.
+     */
     deleteEvent() {
         this.deleted.emit(this.event().id!);
     }

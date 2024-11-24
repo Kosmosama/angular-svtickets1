@@ -31,12 +31,11 @@ export class EventFormComponent {
      * Handles adding a new event by interacting with the EventsService.
      * Emits the added event and resets the form upon success.
      */
-    addEvent(): void {
+    submitNewEvent(): void {
         this.eventsService.addEvent(this.newEvent)
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((something) => {
-            console.log(something);
-            this.added.emit(something); //#TODO
+        .subscribe((addedEvent) => {
+            this.added.emit(addedEvent);
             this.resetForm();
         });
     }
@@ -45,9 +44,9 @@ export class EventFormComponent {
      * Resets the form fields.
      */
     private resetForm(): void {
-        this.newEvent = { title: "", description: "", price: 0, image: "", date: "" };
+        this.newEvent = { title: "", description: "", price: 0, image: "", date: "" }; // initializeEvent
         const form = document.getElementById("newEvent") as HTMLFormElement | null;
-        if (form) form.reset();
+        if (form) form.reset(); //#TODO Reset preview too (?)
     }
 
     /**
