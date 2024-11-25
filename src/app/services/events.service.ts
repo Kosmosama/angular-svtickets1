@@ -42,7 +42,9 @@ export class EventsService {
      * @returns {Observable<MyEvent>} - An observable resolving to the created event object.
      */
     addEvent(event: MyEvent): Observable<MyEvent> {
-        return this.#http.post<MyEvent>("events", event);
+        return this.#http
+            .post<SingleEventResponse>("events", event)
+            .pipe(map((resp: SingleEventResponse) => resp.event));
     }
 
     /**
