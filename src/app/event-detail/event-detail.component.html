@@ -1,1 +1,10 @@
-<p>event-detail works!</p>
+@if (event()) {
+    <div class="mt-4">
+        <event-card [event]="event()!" (deleted)="goBack()"></event-card>
+    </div>
+    <div class="mt-4 mb-4">
+        <button class="btn btn-success" (click)="goBack()">Go back</button>
+    </div>
+} @else {
+    <p>Cargando datos del producto...</p>
+}

@@ -1,6 +1,5 @@
 import { Component, DestroyRef, computed, inject, signal } from "@angular/core";
 import { MyEvent } from "../interfaces/my-event";
-import { EventFormComponent } from "../event-form/event-form.component";
 import { EventCardComponent } from "../event-card/event-card.component";
 import { EventsService } from "../services/events.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -8,7 +7,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 @Component({
     selector: "events-page",
     standalone: true,
-    imports: [EventFormComponent, EventCardComponent],
+    imports: [EventCardComponent],
     templateUrl: "./events-page.component.html",
     styleUrl: "./events-page.component.css",
 })
@@ -42,15 +41,6 @@ export class EventsPageComponent {
     constructor() {
         this.fetchEvents();
     }
-    
-    /**
-     * Adds a new event to the local state.
-     * 
-     * @param {MyEvent} event The event to be added.
-     */
-    handleEventAdded(event: MyEvent): void {
-        this.events.update(currentEvents => [...currentEvents, event]);
-    }
 
     /**
      * Fetches the list of events from the server and updates local state.
@@ -68,7 +58,7 @@ export class EventsPageComponent {
      */
     handleEventDeleted(id: number): void {
         this.eventsService.deleteEvent(id)
-        .pipe(takeUntilDestroyed(this.destroyRef)) // #TODO Remove from array or re-fetch?
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(() => this.fetchEvents());
     }
 

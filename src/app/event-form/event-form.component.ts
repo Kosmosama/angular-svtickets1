@@ -1,9 +1,10 @@
-import { Component, DestroyRef, inject, output } from "@angular/core";
+import { Component, DestroyRef, inject } from "@angular/core";
 import { MyEvent } from "../interfaces/my-event";
 import { FormsModule } from "@angular/forms";
 import { EncodeBase64Directive } from "../directives/encode-base64.directive";
 import { EventsService } from "../services/events.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Router } from "@angular/router";
 
 @Component({
     selector: "event-form",
@@ -15,8 +16,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 export class EventFormComponent {
     private eventsService = inject(EventsService);
     private destroyRef = inject(DestroyRef);
-
-    added = output<MyEvent>();
+    private router = inject(Router);
 
     newEvent: MyEvent = {
         title: "",
@@ -25,41 +25,14 @@ export class EventFormComponent {
         image: "",
         date: ""
     };
-    // initializeEvent()
 
     /**
      * Handles adding a new event by interacting with the EventsService.
-     * Emits the added event and resets the form upon success.
+     * Navigates user back to "/events" upon creation.
      */
     submitNewEvent(): void {
         this.eventsService.addEvent(this.newEvent)
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((addedEvent) => {
-            this.added.emit(addedEvent);
-            this.resetForm();
-        });
-    }
-
-    /**
-     * Resets the form fields.
-     */
-    private resetForm(): void {
-        this.newEvent = { title: "", description: "", price: 0, image: "", date: "" }; // initializeEvent
-        const form = document.getElementById("newEvent") as HTMLFormElement | null;
-        if (form) form.reset(); //#TODO Reset preview too (?)
-    }
-
-    /**
-     * Initializes a blank event object.
-     * @returns A new event with default values.
-     */
-    private initializeEvent(): MyEvent {
-        return {
-            title: "",
-            description: "",
-            price: 0,
-            image: "",
-            date: "",
-        };
+        .subscribe(() => this.router.navigate(['/events']));
     }
 }
