@@ -5,6 +5,7 @@ import { EncodeBase64Directive } from "../directives/encode-base64.directive";
 import { EventsService } from "../services/events.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Router } from "@angular/router";
+import { CanComponentDeactivate } from "../interfaces/can-component-deactivate";
 
 @Component({
     selector: "event-form",
@@ -13,10 +14,11 @@ import { Router } from "@angular/router";
     templateUrl: "./event-form.component.html",
     styleUrl: "./event-form.component.css"
 })
-export class EventFormComponent {
+export class EventFormComponent implements CanComponentDeactivate {
     private eventsService = inject(EventsService);
     private destroyRef = inject(DestroyRef);
     private router = inject(Router);
+    saved = false;
 
     newEvent: MyEvent = {
         title: "",
@@ -33,6 +35,19 @@ export class EventFormComponent {
     submitNewEvent(): void {
         this.eventsService.addEvent(this.newEvent)
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => this.router.navigate(['/events']));
+        .subscribe(() => {
+            this.saved = true;
+            this.router.navigate(['/events']);
+        });
+    }
+
+    /**
+     * Determines whether the user can navigate away from the current page.
+     * If there are unsaved changes, the user is prompted with a confirmation dialog.
+     * 
+     * @returns "True" if the changes were saved or the user confirms the dialog, otherwise "False".
+     */
+    canDeactivate() {
+        return this.saved || confirm('¿Quieres abandonar la página?. Los cambios se perderán...');
     }
 }
