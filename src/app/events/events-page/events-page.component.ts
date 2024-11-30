@@ -1,8 +1,8 @@
 import { Component, DestroyRef, computed, inject, signal } from "@angular/core";
-import { MyEvent } from "../interfaces/my-event";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { EventCardComponent } from "../event-card/event-card.component";
 import { EventsService } from "../services/events.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { MyEvent } from "../interfaces/my-event";
 
 @Component({
     selector: "events-page",

@@ -10,7 +10,7 @@ export const eventResolver: ResolveFn<MyEvent> = (route) => {
 
     return eventsService.getEvent(+route.params["id"]).pipe(
         catchError(() => {
-            router.navigate(["/events"]);
+            router.navigate(["/error"]);
             return EMPTY;
         })
     );
