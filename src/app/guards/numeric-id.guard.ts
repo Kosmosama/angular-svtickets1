@@ -6,7 +6,7 @@ export const numericIdGuard: CanActivateFn = (route) => {
     const router = inject(Router);
 
     if (isNaN(id) || id < 1) {
-        return router.createUrlTree(["/"]);
+        return router.createUrlTree(["/error"]);
     }
 
     return true;
