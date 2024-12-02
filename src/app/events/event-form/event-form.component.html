@@ -1,31 +1,63 @@
-<form action="#" class="mt-4" id="newEvent" (ngSubmit)="submitNewEvent()">
+<form action="#" class="mt-4" id="newEvent" (ngSubmit)="submitNewEvent()" #eventForm="ngForm">
     <div class="mb-3">
         <label for="title" class="form-label">Title</label>
         <input type="text" class="form-control" name="title" id="title" placeholder="Enter title"
-            [(ngModel)]="newEvent.title">
+            [(ngModel)]="newEvent.title" minlength="5" pattern="^[a-zA-Z][a-zA-Z ]*$" required
+            #titleModel="ngModel" [validationClasses]="{ valid: 'is-valid', invalid: 'is-invalid' }">
         <div class="invalid-feedback">Title is required and can only contain letters and spaces.</div>
+        @if(titleModel.errors?.['required']) {
+        <div class="invalid-feedback">Title cannot be empty</div>
+        }
+        @if(titleModel.errors?.['pattern']) {
+        <div class="invalid-feedback">
+            Title must start with a letter and can only contain letters and spaces
+        </div>
+        } @else if (titleModel.errors?.['minlength']){
+        <div class="invalid-feedback">
+            You must enter at least
+            {{titleModel.errors?.['minlength'].requiredLength - titleModel.errors?.['minlength'].actualLength}}
+            characters more
+        </div>
+        }
     </div>
     <div class="mb-3">
         <label for="date" class="form-label">Date</label>
-        <input type="date" class="form-control" id="date" name="date" [(ngModel)]="newEvent.date">
-        <div class="invalid-feedback">Date is required.</div>
+        <input type="date" class="form-control" id="date" name="date" [(ngModel)]="newEvent.date" #dateModel="ngModel" required minDate="{{ today }}"
+        [validationClasses]="{ valid: 'is-valid', invalid: 'is-invalid' }">
+        @if (dateModel.errors?.['required']) {
+			<div class="invalid-feedback">Date is required.</div>
+        }
+        @if (dateModel.errors?.['minDate']) {
+			<div class="invalid-feedback">The date can't be before {{ today | date:'MM/dd/yyyy'}}</div>
+        }
     </div>
     <div class="mb-3">
         <label for="description" class="form-label">Description</label>
         <textarea class="form-control" id="description" name="description" rows="3"
-            [(ngModel)]="newEvent.description"></textarea>
+            [(ngModel)]="newEvent.description" required #descModel="ngModel" [validationClasses]="{ valid: 'is-valid', invalid: 'is-invalid'}"></textarea>
+        @if (descModel.errors?.['required']) {
+            <div class="invalid-feedback">Description is required.</div>
+        }
         <div class="invalid-feedback">Description is required.</div>
     </div>
     <div class="mb-3">
         <label for="price" class="form-label">Price (in €)</label>
         <input type="number" class="form-control" id="price" name="price" min="0.00" max="10000.00" step="0.01"
-            [(ngModel)]="newEvent.price" />
-        <div class="invalid-feedback">Price must be a positive number.</div>
+            [(ngModel)]="newEvent.price" required #priceModel="ngModel" [validationClasses]="{ valid: 'is-valid', invalid: 'is-invalid'}" />
+        @if (priceModel.errors?.['required']) {
+        <div class="invalid-feedback">Price is required.</div>
+        }
+        @if (priceModel.errors?.['min']) {
+        <div class="invalid-feedback">Price must be positive.</div>
+        }
     </div>
     <div class="mb-3">
         <label for="image" class="form-label">Image</label>
-        <input type="file" class="form-control" id="image" name="image" encodeBase64 (encoded)="newEvent.image = $event">
-        <div class="invalid-feedback">An image is required.</div>
+        <input type="file" class="form-control" id="image" name="image" encodeBase64 (encoded)="newEvent.image = $event"
+            required accept="image/*" ngModel #imageModel="ngModel" #fileInput [validationClasses]="{ valid: 'is-valid', invalid: 'is-invalid'}" (change)="checkImage(fileInput)">
+        @if (imageModel.errors?.['required']) {
+            <div class="invalid-feedback">An image is required.</div>
+        }
     </div>
 
     @if ( newEvent.image ){
@@ -33,6 +65,6 @@
     }
 
     <div>
-        <button type="submit" class="btn btn-primary">Create</button>
+        <button type="submit" class="btn btn-primary" [disabled]="eventForm.invalid">Create</button>
     </div>
 </form>
