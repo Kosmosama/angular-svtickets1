@@ -67,4 +67,18 @@ export class EventFormComponent implements CanComponentDeactivate {
     checkImage(fileInputElement: HTMLInputElement) {
         if (!fileInputElement.files || fileInputElement.files.length === 0) this.base64image = '';
     }
+
+//     This page will contain the form to create a new event. Like in exercise 4,
+// validate the form and don’t let the user send it until it’s valid.
+// Also validate the form and don’t let the user send it until it’s valid.
+// Important: show feedback to the user (colors, messages) so he/she knows
+// what’s valid or not. Like in the unit 1 project, show an input to search for an
+// address and the map with the coordinates where the event will take place.
+
+// Will edit a event. You must reuse the component to add an event (eventform). For example, if you don’t receive an id, add a new event. But, if you
+// receive an id, edit the event (showing the current info in the inputs). Also
+// change the submit button text.
+// Don't worry if the current address doesn't appear in the map's search
+// input. You can show the current address in a paragraph above the map, for
+// example.
 }

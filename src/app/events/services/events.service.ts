@@ -57,4 +57,7 @@ export class EventsService {
     deleteEvent(id: number): Observable<void> {
         return this.#http.delete<void>(`events/${id}`);
     }
+
+    // Events service → All operations related with events (including attending
+    //     and comments).
 }
