@@ -8,7 +8,7 @@ import { EventsResponse, SingleEventResponse } from '../interfaces/responses';
     providedIn: 'root'
 })
 export class EventsService {
-    #http = inject(HttpClient);
+    http = inject(HttpClient);
 
     /**
      * Fetches a list of events from the server.
@@ -16,7 +16,7 @@ export class EventsService {
      * @returns {Observable<MyEvent[]>} - An observable stream containing the list of events.
      */
     getEvents(): Observable<MyEvent[]> {
-        return this.#http
+        return this.http
             .get<EventsResponse>("events")
             .pipe(map((resp: EventsResponse) => resp.events));
     }
@@ -29,7 +29,7 @@ export class EventsService {
      * @returns {Promise<MyEvent>} - A promise resolving with the event data response.
      */
     getEvent(id: number): Observable<MyEvent> {
-        return this.#http
+        return this.http
             .get<SingleEventResponse>(`events/${id}`)
             .pipe(map((resp: SingleEventResponse) => resp.event));
     }
@@ -42,7 +42,7 @@ export class EventsService {
      * @returns {Observable<MyEvent>} - An observable resolving to the created event object.
      */
     addEvent(event: MyEvent): Observable<MyEvent> {
-        return this.#http
+        return this.http
             .post<SingleEventResponse>("events", event)
             .pipe(map((resp: SingleEventResponse) => resp.event));
     }
@@ -55,7 +55,7 @@ export class EventsService {
      * @returns {Observable<void>} - An observable that completes when the deletion is successful.
      */
     deleteEvent(id: number): Observable<void> {
-        return this.#http.delete<void>(`events/${id}`);
+        return this.http.delete<void>(`events/${id}`);
     }
 
     // Events service → All operations related with events (including attending
