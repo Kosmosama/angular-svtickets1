@@ -3,11 +3,12 @@ import { LoadGoogleApiService } from '../google-login/load-google-api.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { GoogleLoginDirective } from '../google-login/google-login.directive';
+import { ValidationClassesDirective } from '../../shared/directives/valdation-classes.directive';
 
 @Component({
     selector: 'login',
     standalone: true,
-    imports: [ReactiveFormsModule, GoogleLoginDirective],
+    imports: [ReactiveFormsModule, GoogleLoginDirective, ValidationClassesDirective],
     templateUrl: './login.component.html',
     styleUrl: './login.component.css'
 })

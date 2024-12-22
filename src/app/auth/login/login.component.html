@@ -3,19 +3,46 @@
 
     <div class="mb-3">
         <label for="email">Email:</label>
-        <input type="email" class="form-control" name="email" id="email" placeholder="Email" required />
+        <input type="email" class="form-control" name="email" id="email" placeholder="Email" required formControlName="email" [validationClasses]="{valid: 'is-valid', invalid: 'is-invalid'}"/>
+    
+        @let emailErrors = loginForm.get('email')?.errors;
+
+        @if(emailErrors?.['required']) {
+            <div class="invalid-feedback">Email cannot be empty</div>
+        }
+        @if(emailErrors?.['pattern']) {
+            <div class="invalid-feedback">
+                Email must be an email
+            </div>
+        } @else if (emailErrors?.['minlength']){
+            <div class="invalid-feedback">
+                You must enter at least
+                {{emailErrors?.['minlength'].requiredLength - emailErrors?.['minlength'].actualLength}}
+                characters more
+            </div>
+        }
     </div>
     <div class="mb-3">
         <label for="password">Password:</label>
-        <input type="password" class="form-control" name="password" id="password" placeholder="Password"required />
+        <input type="password" class="form-control" name="password" id="password" placeholder="Password" required formControlName="password" [validationClasses]="{valid: 'is-valid', invalid: 'is-invalid'}"/>
+    
+        @let passwordErrors = loginForm.get('password')?.errors;
+
+        @if(passwordErrors?.['required']) {
+            <div class="invalid-feedback">Password cannot be empty</div>
+        }
     </div>
     
-    <button googleLogin class="google-btn">
+    <!-- <button googleLogin class="google-btn">
         <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google Logo">
         <span>Continue with Google</span>
-    </button>
+    </button> -->
+    @defer () {
+        <div googleLogin class="btn"></div>
+    }
 
-    <p class="text-danger" id="errorInfo"></p>
-    <a class="btn btn-secondary" href="/auth/register" role="button">Create account</a>
-    <button type="submit" class="btn btn-primary">Login</button>
+    <div>
+        <a class="btn btn-secondary" href="/auth/register" role="button">Create account</a>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </div>
 </form>
