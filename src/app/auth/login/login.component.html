@@ -1,4 +1,4 @@
-<form class="mt-4" (ngSubmit)="login()" [formGroup]="loginForm">
+<form class="mt-4" (ngSubmit)="loginWithForm()" [formGroup]="loginForm">
     <legend>Welcome to SVTickets!</legend>
 
     <div class="mb-3">
@@ -8,18 +8,11 @@
         @let emailErrors = loginForm.get('email')?.errors;
 
         @if(emailErrors?.['required']) {
-            <div class="invalid-feedback">Email cannot be empty</div>
+            <div class="invalid-feedback">Email cannot be empty.</div>
         }
-        @if(emailErrors?.['pattern']) {
-            <div class="invalid-feedback">
-                Email must be an email
-            </div>
-        } @else if (emailErrors?.['minlength']){
-            <div class="invalid-feedback">
-                You must enter at least
-                {{emailErrors?.['minlength'].requiredLength - emailErrors?.['minlength'].actualLength}}
-                characters more
-            </div>
+    
+        @if(emailErrors?.['email']) {
+            <div class="invalid-feedback">Email must be an email.</div>
         }
     </div>
     <div class="mb-3">
@@ -34,7 +27,7 @@
     </div>
     
     <div>
-        <google-login class="btn" (login)="loggedGoogle($event)"></google-login>
+        <google-login class="btn btn-google" (login)="loginGoogle($event)"></google-login>
     </div>
     
     @defer () {
@@ -42,7 +35,7 @@
     }
 
     <div>
-        <a class="btn btn-secondary" href="/auth/register" role="button">Create account</a>
+        <a class="btn btn-secondary" [routerLink]="['/auth/register']" role="button">Create account</a>
         <button type="submit" class="btn btn-primary">Login</button>
     </div>
 </form>
