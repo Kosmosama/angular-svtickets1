@@ -1,20 +1,76 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { AuthService } from '../services/auth.service';
+import { AbstractControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Router } from 'express';
+import { EncodeBase64Directive } from '../../shared/directives/encode-base64.directive';
+import { User } from '../../shared/interfaces/user';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ValidationClassesDirective } from '../../shared/directives/valdation-classes.directive';
+import { RouterLink } from '@angular/router';
+import { GeolocationService } from '../services/geolocation.service';
 
 @Component({
     selector: 'register',
-    imports: [],
+    standalone: true,
+    imports: [EncodeBase64Directive, ReactiveFormsModule, ValidationClassesDirective, RouterLink],
     templateUrl: './register.component.html',
     styleUrl: './register.component.css'
 })
 export class RegisterComponent {
-  // This page will contain a form for the user to register. Create the same form
-  // used in unit 1 project and validate it in the client side: all fields are required,
-  // email fields must be of type email, and password must have at least 4
-  // characters .
-  // Also, create a validator that validates that both emails are equal. Put the
-  // error message for this validator below the “repeat email” input (with the
-  // corresponding css class for that input). You can create a group validator to
-  // check both values, or just create a normal validator that you put on the second
-  // email field and receives the first email field as the input value.
-  // Don’t forget to geolocate the user and send the coordinates to the server.
+    private authService = inject(AuthService);
+    private fb = inject(NonNullableFormBuilder);
+    private router = inject(Router);
+    private destroyRef = inject(DestroyRef);
+
+    base64image = "";
+
+    emailMatchValidator: ValidatorFn = ({ get }: AbstractControl): ValidationErrors | null => 
+        get('email')?.value === get('repeatEmail')?.value ? null : { emailMismatch: true };    
+
+    registerForm = this.fb.group({
+        name: ['', Validators.required],
+        email: ['', [Validators.required, Validators.email]],
+        repeatEmail: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(4)]],
+        lat: [0],
+        lng: [0],
+        avatar: ['', Validators.required],
+    }, { validators: this.emailMatchValidator });
+
+    /**
+     * Checks whether the image input change actually placed a valid image, if the image was invalid,
+     * sets image preview to hidden once again.
+     * 
+     * @param fileInputElement Input element that contains the files.
+     */
+    checkImage(fileInputElement: HTMLInputElement) {
+        if (!fileInputElement.files || fileInputElement.files.length === 0) this.base64image = '';
+    }
+
+    /**
+     * Submits the registration form and navigates to the login page upon success.
+     */
+    register() {
+        const user: User = {
+            ...this.registerForm.getRawValue(),
+        };
+
+        this.authService
+            .register(user)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                this.router.navigate(['/auth/login']);
+            });
+    }
+
+    constructor() {
+        GeolocationService.getLocation()
+            .then((coords) => {
+                this.registerForm.get('lat')?.setValue(coords.latitude);
+                this.registerForm.get('lng')?.setValue(coords.longitude);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
 }
