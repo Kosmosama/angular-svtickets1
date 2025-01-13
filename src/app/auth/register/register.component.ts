@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'register',
-  standalone: true,
-  imports: [],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+    selector: 'register',
+    imports: [],
+    templateUrl: './register.component.html',
+    styleUrl: './register.component.css'
 })
 export class RegisterComponent {
   // This page will contain a form for the user to register. Create the same form

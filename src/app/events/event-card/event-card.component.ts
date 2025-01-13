@@ -8,7 +8,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'event-card',
-    standalone: true,
     imports: [DatePipe, IntlCurrencyPipe, RouterLink],
     templateUrl: './event-card.component.html',
     styleUrl: './event-card.component.css'

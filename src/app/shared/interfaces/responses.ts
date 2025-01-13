@@ -10,3 +10,7 @@ export interface EventsResponse {
 export interface SingleEventResponse {
     event: MyEvent;
 }
+
+export interface TokenResponse {
+    accessToken: string;
+}

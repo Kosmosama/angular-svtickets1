@@ -1,5 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import { SsrCookieService } from 'ngx-cookie-service-ssr';
+import { UserLogin } from '../../shared/interfaces/user';
+import { map, Observable } from 'rxjs';
+import { TokenResponse } from '../../shared/interfaces/responses';
 
 @Injectable({
     providedIn: 'root'
@@ -7,23 +11,43 @@ import { inject, Injectable } from '@angular/core';
 export class AuthService {
     http = inject(HttpClient);
     cookieService = inject(SsrCookieService);
-
+    
     // Auth service → This service will manage all operations related to login/register.
-
+    
     // AuthService This service will perform the login (storing the →
     //     authentication token) and logout (removing the token) actions, and will
     //     contain the following attributes and methods:
+
+
     //     ◦ #logged: WritableSignal<boolean> By default false. Will indicate if →
     //     the user is logged in or not. Create a getter that returns this signal in
     //     read-only mode.
+    #logged: WritableSignal<boolean> = signal(false);
 
+    get logged(): Signal<boolean> {
+        return this.#logged.asReadonly();
+    }
+    
     //     ◦ login(data: UserLogin): Observable<void> Will check the login →
     //     against the server. If login goes ok, in the map function, save the
     //     token in the Local Storage and set logged to true.
-
+    login(user: UserLogin): Observable<void> {
+        return this.http
+            .post<TokenResponse>("auth/login", user)
+            .pipe(map((resp: TokenResponse) => {
+                this.#logged.set(true);
+                this.cookieService.set('token', resp.accessToken);
+            })
+        );
+      }
 
     //     ◦ Logout(): void This method will remove the token from the → Local
     //     Storage, set this.logged to false.
+    logout(): void {
+        this.cookieService.delete('token');
+        this.#logged.set(false);
+    }
+    
     //     ◦ isLogged(): Observable<boolean>.
     //     ▪ If the this.logged property is false and there’s no token in Local
     //     Storage, return Observable<false> → of(false). Import the of

@@ -6,10 +6,9 @@ import { MyEvent } from "../../shared/interfaces/my-event";
 
 @Component({
     selector: "events-page",
-    standalone: true,
     imports: [EventCardComponent],
     templateUrl: "./events-page.component.html",
-    styleUrl: "./events-page.component.css",
+    styleUrl: "./events-page.component.css"
 })
 export class EventsPageComponent {
     private eventsService = inject(EventsService);
