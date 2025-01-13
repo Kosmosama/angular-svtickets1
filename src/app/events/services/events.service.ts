@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { MyEvent } from '../interfaces/my-event';
+import { MyEvent } from '../../shared/interfaces/my-event';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { EventsResponse, SingleEventResponse } from '../interfaces/responses';
+import { EventsResponse, SingleEventResponse } from '../../shared/interfaces/responses';
 
 @Injectable({
     providedIn: 'root'

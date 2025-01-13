@@ -6,6 +6,7 @@ import { inject, Injectable } from '@angular/core';
 })
 export class AuthService {
     http = inject(HttpClient);
+    cookieService = inject(SsrCookieService);
 
     // Auth service → This service will manage all operations related to login/register.
 
@@ -15,9 +16,12 @@ export class AuthService {
     //     ◦ #logged: WritableSignal<boolean> By default false. Will indicate if →
     //     the user is logged in or not. Create a getter that returns this signal in
     //     read-only mode.
+
     //     ◦ login(data: UserLogin): Observable<void> Will check the login →
     //     against the server. If login goes ok, in the map function, save the
     //     token in the Local Storage and set logged to true.
+
+
     //     ◦ Logout(): void This method will remove the token from the → Local
     //     Storage, set this.logged to false.
     //     ◦ isLogged(): Observable<boolean>.

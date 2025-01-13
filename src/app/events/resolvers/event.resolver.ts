@@ -1,5 +1,5 @@
 import { ResolveFn, Router } from '@angular/router';
-import { MyEvent } from '../interfaces/my-event';
+import { MyEvent } from '../../shared/interfaces/my-event';
 import { inject } from '@angular/core';
 import { EventsService } from '../services/events.service';
 import { catchError, EMPTY } from 'rxjs';

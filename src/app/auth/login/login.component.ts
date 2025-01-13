@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { LoadGoogleApiService } from '../google-login/load-google-api.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { GoogleLoginDirective } from '../google-login/google-login.directive';
 import { ValidationClassesDirective } from '../../shared/directives/valdation-classes.directive';
+import { UserLogin } from '../../shared/interfaces/user';
+import { GeolocationService } from '../services/geolocation.service';
 
 @Component({
     selector: 'login',
@@ -13,24 +13,33 @@ import { ValidationClassesDirective } from '../../shared/directives/valdation-cl
     styleUrl: './login.component.css'
 })
 export class LoginComponent {
-    private loadGoogle = inject(LoadGoogleApiService);
-
     private fb = inject(NonNullableFormBuilder);
     loginForm = this.fb.group({
-        email: ['', [Validators.required, Validators.pattern(/^\S+@\S+\.\S+$/)]],
-        password: ['', [Validators.required]]}
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required]]
+    }
     );
 
-    constructor() {
-        this.loadGoogle.credential$.
-            pipe(takeUntilDestroyed())
-            .subscribe(
-                resp => console.log(resp.credential) // Envia esto tu API
-            );
+    loggedGoogle(resp: google.accounts.id.CredentialResponse) {
+        // Envia esto tu API
+        console.log(resp.credential);
     }
 
     login(): void {
-        console.log("login");
+        const user: UserLogin = {
+            ...this.loginForm.getRawValue(),
+            lat: 0,
+            lng: 0,
+        };
+
+        GeolocationService.getLocation()
+            .then((coords) => {
+                user.lat = coords.latitude;
+                user.lng = coords.longitude;
+            })
+            .catch((error) => {
+                console.error('Error retrieving location:', error);
+            });
     }
 
     // This page will contain a page with a form to log in (email, password) and
