@@ -1,6 +1,5 @@
 import { Component, DestroyRef, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { GoogleLoginDirective } from '../google-login/google-login.directive';
 import { ValidationClassesDirective } from '../../shared/directives/valdation-classes.directive';
 import { ThirdPartyLogin, UserLogin } from '../../shared/interfaces/user';
 import { GeolocationService } from '../services/geolocation.service';
@@ -9,11 +8,12 @@ import { Router } from 'express';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import { RouterLink } from '@angular/router';
+import { GoogleLoginDirective } from '../google-login/google-login.directive';
 
 @Component({
     selector: 'login',
     standalone: true,
-    imports: [ReactiveFormsModule, GoogleLoginDirective, ValidationClassesDirective, RouterLink],
+    imports: [ReactiveFormsModule, ValidationClassesDirective, RouterLink, GoogleLoginDirective],
     templateUrl: './login.component.html',
     styleUrl: './login.component.css'
 })
