@@ -12,6 +12,7 @@ import { DatePipe } from "@angular/common";
 
 @Component({
     selector: "event-form",
+    standalone: true,
     imports: [ReactiveFormsModule, EncodeBase64Directive, ValidationClassesDirective, DatePipe],
     templateUrl: "./event-form.component.html",
     styleUrl: "./event-form.component.css"
