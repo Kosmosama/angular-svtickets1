@@ -58,6 +58,20 @@ export class EventsService {
         return this.http.delete<void>(`events/${id}`);
     }
 
+    /**
+     * Toggles attend status for an event on the server based on current attend status.
+     *
+     * @param {number} eventId - The ID of the event to toggle attend for.
+     * @param {boolean} currentAttendStatus - The current attend status of the event.
+     * 
+     * @returns {Observable<boolean>} - An observable resolving to the updated attend status.
+     */
+    toggleAttend(eventId: number, currentAttendStatus: boolean): Observable<boolean> {
+        return this.http
+            .request<void>(currentAttendStatus ? "DELETE":"POST", `events/${eventId}/attend`)
+            .pipe(map(() => !currentAttendStatus));
+    }
+
     // Events service → All operations related with events (including attending
     //     and comments).
 }

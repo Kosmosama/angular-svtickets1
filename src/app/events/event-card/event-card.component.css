@@ -21,7 +21,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-align: center;
-        align-items: center;
+        line-height: 1em;
         box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.3);
 
         &:hover {
@@ -31,11 +31,44 @@
             width: 68px;
 
             &::before {
-                content: ' Delete ';
+                content: " Delete ";
                 font-size: 0.8em;
                 position: relative;
                 top: -1px;
             }
         }
+    }
+
+    .card-text {
+        white-space: pre-wrap;
+    }
+}
+
+.card-footer {
+    font-size: smaller;
+
+    .avatar img {
+        width: 40px;
+        cursor: pointer;
+    }
+
+    .name a {
+        color: #385898;
+        font-weight: bold;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.card-title a {
+    text-decoration: none;
+}
+
+.attend-button {
+    &:hover {
+        cursor: pointer;
     }
 }

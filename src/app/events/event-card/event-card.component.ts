@@ -14,17 +14,34 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     styleUrl: './event-card.component.css'
 })
 export class EventCardComponent {
-    event = input.required<MyEvent>();
-    deleted = output<number>();
     private destroyRef = inject(DestroyRef);
     private eventsService = inject(EventsService);
+
+    event = input.required<MyEvent>();
+    deleted = output<number>();
+    attend = output<number>();
 
     /**
      * Deletes himself from server and emits its own id upon deletion.
      */
     deleteEvent() {
-        this.eventsService.deleteEvent(this.event().id!)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => this.deleted.emit(this.event().id!));
+        this.eventsService
+            .deleteEvent(this.event().id!)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.deleted.emit(this.event().id!));// #TODO Accept deletion (ngx-sweetalert2)
+    }
+
+    /**
+     * Toggles attend status for the event.
+     */
+    attendEvent() {
+        this.eventsService
+            .toggleAttend(this.event().id!, this.event().attend)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((updatedStatus) => {
+                this.event().attend = updatedStatus;
+                this.event().numAttend += updatedStatus ? 1 : -1;
+                this.attend.emit(this.event().id!);
+            });
     }
 }
