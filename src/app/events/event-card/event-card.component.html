@@ -15,7 +15,15 @@
                 <!-- Remove this div if event is not mine -->
                 @if (event().mine) {
                     <div class="col">
-                        <button class="btn btn-danger delete" (click)="deleteEvent()">
+                        <button class="btn btn-danger delete" (confirm)="deleteEvent()"
+                        [swal]="{
+                            title: 'Are you sure?',
+                            icon: 'question',
+                            showDenyButton: true,
+                            denyButtonText: 'Don\'t delete.',
+                            showCancelButton: true
+                        }"
+                        >
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>
@@ -27,7 +35,7 @@
                     <div class="text-success text-end m-0 attend-button" 
                     [class]="{'bi-hand-thumbs-up-fill': event().attend, 'bi-hand-thumbs-down-fill': !event().attend}" 
                     (click)="attendEvent()"
-                    tabindex="0" 
+                    tabindex="0"
                     (keydown.enter)="attendEvent()">
                         <i class="bi bi-hand-thumbs-up-fill"></i> {{ event().attend ? 'Im going': 'Not going' }}
                     </div>

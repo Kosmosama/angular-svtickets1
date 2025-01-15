@@ -1,4 +1,5 @@
-import { ApplicationConfig, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { baseUrlInterceptor } from './shared/interceptors/base-url.interceptor';
 import { PreloadAllModules, provideRouter, withComponentInputBinding, withPreloading } from '@angular/router';
@@ -13,5 +14,6 @@ export const appConfig: ApplicationConfig = {
         provideClientHydration(withEventReplay()),
         provideHttpClient(withInterceptors([baseUrlInterceptor]), withFetch()),
         provideGoogleId("746820501392-oalflicqch2kuc12s8rclb5rf7b1fist.apps.googleusercontent.com"),
+        importProvidersFrom(SweetAlert2Module.forRoot())
     ]
 };
