@@ -4,10 +4,9 @@ import { ValidationClassesDirective } from '../../shared/directives/valdation-cl
 import { ThirdPartyLogin, UserLogin } from '../../shared/interfaces/user';
 import { GeolocationService } from '../services/geolocation.service';
 import { AuthService } from '../services/auth.service';
-import { Router } from 'express';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { GoogleLoginDirective } from '../google-login/google-login.directive';
 
 @Component({

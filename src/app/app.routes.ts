@@ -9,5 +9,5 @@ export const routes: Routes = [
     
     { path: "error", loadComponent: () => import("./shared/error/error.component").then((c) => c.ErrorComponent), title: "Error | SVtickets" },
     
-    { path: "**", redirectTo: "/auth/login" }
+    { path: "**", redirectTo: "error" }
 ];

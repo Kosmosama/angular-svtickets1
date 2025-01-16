@@ -1,12 +1,11 @@
 import { Component, DestroyRef, inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { AbstractControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { Router } from 'express';
 import { EncodeBase64Directive } from '../../shared/directives/encode-base64.directive';
 import { User } from '../../shared/interfaces/user';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ValidationClassesDirective } from '../../shared/directives/valdation-classes.directive';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { GeolocationService } from '../services/geolocation.service';
 
 @Component({
@@ -52,7 +51,7 @@ export class RegisterComponent {
      */
     register() {
         const user: User = {
-            ...this.registerForm.getRawValue(),
+            ...this.registerForm.getRawValue(), // #TODO Poner como avatar el base64image
         };
 
         this.authService
