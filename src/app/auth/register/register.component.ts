@@ -51,8 +51,10 @@ export class RegisterComponent {
      */
     register() {
         const user: User = {
-            ...this.registerForm.getRawValue(), // #TODO Poner como avatar el base64image
+            ...this.registerForm.getRawValue(),
+            avatar: this.base64image,
         };
+        console.log(user);
 
         this.authService
             .register(user)
