@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { EventCardComponent } from "../event-card/event-card.component";
 import { EventsService } from "../services/events.service";
 import { MyEvent } from "../../shared/interfaces/my-event";
+import { response } from "express";
 
 @Component({
     selector: "events-page",
@@ -46,9 +47,10 @@ export class EventsPageComponent {
      * Fetches the list of events from the server and updates local state.
      */
     fetchEvents(): void {
-        this.eventsService.getEvents()
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(events => this.events.set(events));
+        this.eventsService
+            .getEvents()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(response => this.events.set(response.events));
     }
 
     /**

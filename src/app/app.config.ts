@@ -6,13 +6,14 @@ import { PreloadAllModules, provideRouter, withComponentInputBinding, withPreloa
 import { routes } from './app.routes';
 import { provideGoogleId } from './auth/google-login/google-login.config';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { authInterceptor } from './shared/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
     providers: [
         provideExperimentalZonelessChangeDetection(), 
         provideRouter(routes, withComponentInputBinding(), withPreloading(PreloadAllModules)),
         provideClientHydration(withEventReplay()),
-        provideHttpClient(withInterceptors([baseUrlInterceptor]), withFetch()),
+        provideHttpClient(withInterceptors([baseUrlInterceptor, authInterceptor]), withFetch()),
         provideGoogleId("746820501392-oalflicqch2kuc12s8rclb5rf7b1fist.apps.googleusercontent.com"),
         importProvidersFrom(SweetAlert2Module.forRoot())
     ]

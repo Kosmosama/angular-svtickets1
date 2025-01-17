@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, input, output, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, input, output, viewChild } from '@angular/core';
 import { MyEvent } from '../../shared/interfaces/my-event';
 import { DatePipe } from '@angular/common';
 import { IntlCurrencyPipe } from '../../shared/pipes/intl-currency.pipe';
@@ -17,10 +17,10 @@ import { SwalComponent, SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 export class EventCardComponent {
     private destroyRef = inject(DestroyRef);
     private eventsService = inject(EventsService);
+    private cdr = inject(ChangeDetectorRef);
 
     event = input.required<MyEvent>();
     deleted = output<number>();
-    attend = output<number>();
 
     /**
      * Deletes himself from server and emits its own id upon deletion.
@@ -42,7 +42,7 @@ export class EventCardComponent {
             .subscribe((updatedStatus) => {
                 this.event().attend = updatedStatus;
                 this.event().numAttend += updatedStatus ? 1 : -1;
-                this.attend.emit(this.event().id!);
+                this.cdr.markForCheck();
             });
     }
 }

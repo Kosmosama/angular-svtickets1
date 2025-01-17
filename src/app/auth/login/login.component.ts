@@ -38,7 +38,11 @@ export class LoginComponent {
                 .then((coords) => {
                     user.lat = coords.latitude;
                     user.lng = coords.longitude;
-
+                })
+                .catch((error) => {
+                    console.warn('Could not retrieve location, using default coordinates:', error);
+                })
+                .finally(() => {
                     this.authService
                         .login(user)
                         .pipe(takeUntilDestroyed(this.destroyRef))
@@ -51,10 +55,6 @@ export class LoginComponent {
                                 observer.error(error);
                             }
                         });
-                })
-                .catch((error) => {
-                    console.error('Error retrieving location:', error);
-                    observer.error(error);
                 });
         });
     }
@@ -69,14 +69,14 @@ export class LoginComponent {
             lat: 0,
             lng: 0,
         };
-    
+
         this.login(thirdPartyUser)
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
                 this.router.navigate(['/events']);
             });
     }
-    
+
     /**
      * Handles form-based login, including geolocation and navigation.
      */
@@ -86,7 +86,7 @@ export class LoginComponent {
             lat: 0,
             lng: 0,
         };
-    
+
         this.login(user)
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {

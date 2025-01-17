@@ -13,12 +13,14 @@ export class EventsService {
     /**
      * Fetches a list of events from the server.
      * 
-     * @returns {Observable<MyEvent[]>} - An observable stream containing the list of events.
+     * @param {string} search - The search query to filter events.
+     * @param {number} page - The page number for pagination.
+     * 
+     * @returns {Observable<EventsResponse>} - An observable stream containing the events response.
      */
-    getEvents(): Observable<MyEvent[]> {
-        return this.http
-            .get<EventsResponse>("events")
-            .pipe(map((resp: EventsResponse) => resp.events));
+    getEvents(search: string = "", page: number = 1): Observable<EventsResponse> {
+        const params: URLSearchParams = new URLSearchParams({ page: String(page), search });
+        return this.http.get<EventsResponse>(`events?${params.toString()}`);
     }
 
     /**
@@ -62,14 +64,14 @@ export class EventsService {
      * Toggles attend status for an event on the server based on current attend status.
      *
      * @param {number} eventId - The ID of the event to toggle attend for.
-     * @param {boolean} currentAttendStatus - The current attend status of the event.
+     * @param {boolean} attending - The current attend status of the event.
      * 
      * @returns {Observable<boolean>} - An observable resolving to the updated attend status.
      */
-    toggleAttend(eventId: number, currentAttendStatus: boolean): Observable<boolean> {
+    toggleAttend(eventId: number, attending: boolean): Observable<boolean> {
         return this.http
-            .request<void>(currentAttendStatus ? "DELETE":"POST", `events/${eventId}/attend`)
-            .pipe(map(() => !currentAttendStatus));
+            .request<void>(attending ? "DELETE":"POST", `events/${eventId}/attend`)
+            .pipe(map(() => !attending));
     }
 
     // Events service → All operations related with events (including attending
