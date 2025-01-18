@@ -11,6 +11,8 @@
     
         @let emailErrors = registerForm.get('email')?.errors;
 
+        <!-- #TODO What should I do if email already exists in db? -->
+
         @if(emailErrors?.['required']) {
             <div class="invalid-feedback">Email cannot be empty.</div>
         }
@@ -21,22 +23,19 @@
     </div>
     <div class="mb-3">
         <label for="repeatEmail">Repeat Email:</label>
-        <input type="email" class="form-control" id="repeatEmail" name="repeatEmail" placeholder="Repeat Email." required formControlName="repeatEmail" [validationClasses]="{valid: 'is-valid', invalid: 'is-invalid'}"/>
+        <input type="email" class="form-control" id="repeatEmail" name="repeatEmail" placeholder="Repeat Email" required formControlName="repeatEmail" [validationClasses]="{valid: 'is-valid', invalid: 'is-invalid'}"/>
     
         @let repeatEmailErrors = registerForm.get('repeatEmail')?.errors;
-        <!-- #TODO -->
-        <!-- @let emailMismatchErrors = registerForm.get('emailMismatch')?.errors;
-
-        @if(emailMismatchErrors?.['mismatch']) {
-            <div class="invalid-feedback">Emails do not match.</div>
-        } -->
-
+        
         @if(repeatEmailErrors?.['required']) {
             <div class="invalid-feedback">Email cannot be empty.</div>
         }
-    
+        
         @if(repeatEmailErrors?.['email']) {
             <div class="invalid-feedback">Email must be an email.</div>
+        }
+        @else if (repeatEmailErrors?.['emailMismatch']) {
+            <div class="invalid-feedback">Emails do not match.</div>
         }
     </div>
     <div class="mb-3">

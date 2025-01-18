@@ -1,6 +1,6 @@
 import { Component, DestroyRef, inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { AbstractControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { EncodeBase64Directive } from '../../shared/directives/encode-base64.directive';
 import { User } from '../../shared/interfaces/user';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -23,18 +23,24 @@ export class RegisterComponent {
 
     base64image = "";
 
-    emailMatchValidator: ValidatorFn = ({ get }: AbstractControl): ValidationErrors | null => 
-        get('email')?.value === get('repeatEmail')?.value ? null : { emailMismatch: true };    
+    /**
+     * Validator function to check if the repeated email matches the original email.
+     * 
+     * @returns A ValidatorFn that returns null if the emails match, or an object with the key `emailMismatch` set to true if they do not.
+     */
+    repeatEmailValidator(): ValidatorFn {
+        return ({ parent, value }: AbstractControl) => parent?.get('email')?.value === value ? null : { emailMismatch: true };
+    }    
 
     registerForm = this.fb.group({
         name: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
-        repeatEmail: ['', [Validators.required, Validators.email]],
+        repeatEmail: ['', [Validators.required, Validators.email, this.repeatEmailValidator()]],
         password: ['', [Validators.required, Validators.minLength(4)]],
         lat: [0],
         lng: [0],
         avatar: ['', Validators.required],
-    }, { validators: this.emailMatchValidator });
+    });
 
     /**
      * Checks whether the image input change actually placed a valid image, if the image was invalid,
@@ -50,6 +56,11 @@ export class RegisterComponent {
      * Submits the registration form and navigates to the login page upon success.
      */
     register() {
+        if (this.registerForm.invalid) {
+            this.registerForm.markAllAsTouched();
+            return;
+        }
+
         const user: User = {
             ...this.registerForm.getRawValue(),
             avatar: this.base64image,
