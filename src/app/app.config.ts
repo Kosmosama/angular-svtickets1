@@ -18,3 +18,5 @@ export const appConfig: ApplicationConfig = {
         importProvidersFrom(SweetAlert2Module.forRoot())
     ]
 };
+
+// #TODO Fix hydration

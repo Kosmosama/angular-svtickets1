@@ -11,3 +11,5 @@ export const routes: Routes = [
     
     { path: "**", redirectTo: "error" }
 ];
+
+// SSR? https://fullstackpro.es/courses/curso-angular/server-side-rendering

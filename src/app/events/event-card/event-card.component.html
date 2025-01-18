@@ -52,8 +52,8 @@
                 <div class="date small text-muted">{{ event().date | date : "dd/MM/yyyy" }}</div>
             </div>
             <div class="col-auto text-end text-muted">
-                <div class="price small">{{ event().price | intlCurrency : "EUR" : "es-ES" }}</div>
-                <div class="distance small">{{ event().distance }}</div>
+                <div class="price small">{{ event().price | currency : "EUR" : "es-ES" }}</div>
+                <div class="distance small">{{ event().distance | eventDistance }}</div>
             </div>
         </div>
     </div>

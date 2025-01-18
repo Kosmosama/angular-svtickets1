@@ -1,16 +1,17 @@
 import { ChangeDetectorRef, Component, DestroyRef, inject, input, output, viewChild } from '@angular/core';
 import { MyEvent } from '../../shared/interfaces/my-event';
 import { DatePipe } from '@angular/common';
-import { IntlCurrencyPipe } from '../../shared/pipes/intl-currency.pipe';
+import { CurrencyPipe } from '../../shared/pipes/currency.pipe';
 import { RouterLink } from '@angular/router';
 import { EventsService } from '../services/events.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SwalComponent, SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { EventDistancePipe } from '../../shared/pipes/event-distance.pipe';
 
 @Component({
     selector: 'event-card',
     standalone: true,
-    imports: [DatePipe, IntlCurrencyPipe, RouterLink, SweetAlert2Module],
+    imports: [DatePipe, CurrencyPipe, RouterLink, SweetAlert2Module, EventDistancePipe],
     templateUrl: './event-card.component.html',
     styleUrl: './event-card.component.css'
 })
