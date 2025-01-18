@@ -39,9 +39,14 @@ export class AuthService {
         return this.http
             .post<TokenResponse>(endpoint, payload)
             .pipe(
-                map((resp: TokenResponse) => {
+                map(({ accessToken }: TokenResponse) => {
+                    // Replace token in cookies (at some point I found I had 3)
+                    if (this.cookieService.get("token")) {
+                        this.cookieService.delete("token");
+                    }
+                    this.cookieService.set("token", accessToken);
+
                     this.#logged.set(true);
-                    this.cookieService.set("token", resp.accessToken);
                 })
             );
     }
