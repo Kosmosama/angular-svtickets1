@@ -31,8 +31,11 @@
                     <div class="text-end attend-users">
                         <i class="bi bi-people-fill"></i> {{ event().numAttend }}
                     </div>
-                    <div class="text-success text-end m-0 attend-button" 
-                    [class]="{'bi-hand-thumbs-up-fill': event().attend, 'bi-hand-thumbs-down-fill': !event().attend}" 
+                    <div class="text-end m-0 attend-button" 
+                    [ngClass]="{
+                    'bi-hand-thumbs-up-fill text-success': event().attend, 
+                    'bi-hand-thumbs-down-fill text-danger': !event().attend
+                    }" 
                     (click)="attendEvent()"
                     tabindex="0"
                     (keydown.enter)="attendEvent()">
