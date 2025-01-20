@@ -11,7 +11,7 @@ export const logoutActivateGuard: CanActivateFn = (route, state) => {
             .isLogged()
             .pipe(
                 map(isLogged => {
-                    if (!isLogged) return router.createUrlTree(["/posts"]);
+                    if (!isLogged) return router.createUrlTree(["/events"]);
                     return true;
                 })
             );

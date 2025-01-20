@@ -2,15 +2,17 @@
     <div class="container-fluid">
         <a class="navbar-brand" [routerLink]="['/events']">SVTickets</a>
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/events']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/events/add']" [routerLinkActive]="['active']">New event</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/profile']" [routerLinkActive]="['active']">My profile</a>
-            </li>
+            @if (isLogged()) {
+                <li class="nav-item">
+                    <a class="nav-link" [routerLink]="['/events']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" [routerLink]="['/events/add']" [routerLinkActive]="['active']">New event</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" [routerLink]="['/profile']" [routerLinkActive]="['active']">My profile</a>
+                </li>
+            }
         </ul>
         <ul class="navbar-nav">
             @if (!isLogged()) {
@@ -23,7 +25,7 @@
             }
             @if (isLogged()) {
                 <li class="nav-item">
-                    <a class="nav-link" id="logout" routerLinkActive="active" (click)="logout()" (keydown.enter)="logout()" tabindex="0">Logout</a>
+                    <a class="nav-link" id="logout" (click)="logout()" (keydown.enter)="logout()" tabindex="0" style="cursor: pointer;">Logout</a>
                 </li>
             }
         </ul>
