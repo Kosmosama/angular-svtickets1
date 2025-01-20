@@ -21,6 +21,7 @@ export class RegisterComponent {
     private router = inject(Router);
     private destroyRef = inject(DestroyRef);
 
+    saved = false;
     base64image = "";
 
     /**
@@ -71,8 +72,19 @@ export class RegisterComponent {
             .register(user)
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
+                this.saved = true;
                 this.router.navigate(['/auth/login']);
             });
+    }
+
+    /**
+     * Determines whether the user can navigate away from the current page.
+     * If there are unsaved changes, the user is prompted with a confirmation dialog.
+     * 
+     * @returns "True" if the changes were saved, form values were not changed or the user confirms the dialog, otherwise "False".
+     */
+    canDeactivate() {
+        return this.saved || this.registerForm.pristine || confirm('Do you want to leave the page?. Changes will be lost...');
     }
 
     constructor() {

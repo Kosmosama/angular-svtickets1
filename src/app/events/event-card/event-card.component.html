@@ -4,41 +4,33 @@
             <img class="card-img-top" [src]="event().image" alt="image" />
         </a>
         <div class="card-body">
-            <a
-                class="text-decoration-none"
-                [routerLink]="['/events', event().id]"
-            >
+            <a class="text-decoration-none" [routerLink]="['/events', event().id]">
                 <h4 class="card-title">{{ event().title }}</h4>
             </a>
             <p class="card-text">{{ event().description }}</p>
+            <a class="btn btn-primary" [routerLink]="['/events', event().id, 'edit']">Edit</a>
             <div class="row">
                 @if (event().mine) {
-                    <div class="col">
-                        <button class="btn btn-danger delete" (confirm)="deleteEvent()"
-                        [swal]="{
+                <div class="col">
+                    <button class="btn btn-danger delete" (confirm)="deleteEvent()" [swal]="{
                             title: 'Are you sure?',
                             icon: 'question',
                             showDenyButton: true,
                             denyButtonText: 'Don\'t delete.',
                             showCancelButton: true
-                        }"
-                        >
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
+                        }">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
                 }
                 <div class="col-auto ms-auto">
                     <div class="text-end attend-users">
                         <i class="bi bi-people-fill"></i> {{ event().numAttend }}
                     </div>
-                    <div class="text-end m-0 attend-button" 
-                    [ngClass]="{
+                    <div class="text-end m-0 attend-button" [ngClass]="{
                     'bi-hand-thumbs-up-fill text-success': event().attend, 
                     'bi-hand-thumbs-down-fill text-danger': !event().attend
-                    }" 
-                    (click)="attendEvent()"
-                    tabindex="0"
-                    (keydown.enter)="attendEvent()">
+                    }" (click)="attendEvent()" tabindex="0" (keydown.enter)="attendEvent()">
                         {{ event().attend ? 'Im going': 'Not going' }}
                     </div>
                 </div>
