@@ -36,7 +36,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
     - Use effect function and create dependencies reading the values of the 3 signals above. Call corresponding service to load events based on these params.
     - In both approaches, if page = 1, replace events with result; Otherwise, concatenate.
 - Use input for "creator" and "attending" (can be null).
-    - Include both in effect function and call corresponding method.
+    - Include both in effect function and call corresponding method. (do it by hand, GET /events doesnt do it)
     - Add something like this: "Events created by Pepito. Filtered by party. Ordered by price." (Call service that gets user info to get username)
 
 ### /EVENTS/{id}
@@ -45,7 +45,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 - Show comments. (html in event-detail.html)
     - .user-info { width: 8rem; .avatar { width: 4rem; } }
     - .comment { white-space: pre-wrap; }
-- Show form to create comment. (Only input for comment and button to send it {POST → /events/:id/comments | format: { comment: "User comment" } | returns comment})
+- Show form to create comment with rxResource. (Only input for comment and button to send it {POST → /events/:id/comments | format: { comment: "User comment" } | returns comment})
     ```html
     <form class="mt-4">
         <div class="form-group">

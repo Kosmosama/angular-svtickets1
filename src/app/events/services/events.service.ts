@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { MyEvent } from '../../shared/interfaces/my-event';
+import { MyEvent, MyEventInsert } from '../../shared/interfaces/my-event';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { EventsResponse, SingleEventResponse } from '../../shared/interfaces/responses';
@@ -43,7 +43,7 @@ export class EventsService {
      * 
      * @returns {Observable<MyEvent>} - An observable resolving to the created event object.
      */
-    addEvent(event: MyEvent): Observable<MyEvent> {
+    addEvent(event: MyEventInsert): Observable<MyEventInsert> {
         return this.http
             .post<SingleEventResponse>("events", event)
             .pipe(map((resp: SingleEventResponse) => resp.event));

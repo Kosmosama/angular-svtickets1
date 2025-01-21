@@ -4,8 +4,8 @@ export interface MyEventInsert {
     title: string;
     description: string;
     price: number;
-    lat: number;
     lng: number;
+    lat: number;
     address: string;
     image: string;
     date: string;

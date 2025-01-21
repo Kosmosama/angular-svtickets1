@@ -1,19 +1,23 @@
-import { Component, DestroyRef, inject } from "@angular/core";
+import { Component, DestroyRef, inject, signal } from "@angular/core";
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Router } from "@angular/router";
-import { MyEvent } from "../../shared/interfaces/my-event";
+import { MyEvent, MyEventInsert } from "../../shared/interfaces/my-event";
 import { EncodeBase64Directive } from "../../shared/directives/encode-base64.directive";
 import { EventsService } from "../services/events.service";
 import { CanComponentDeactivate } from "../../shared/interfaces/can-component-deactivate";
 import { ValidationClassesDirective } from "../../shared/directives/valdation-classes.directive";
 import { minDateValidator } from "../../shared/directives/min-date.directive";
 import { DatePipe } from "@angular/common";
+import { OlMapDirective } from "../../ol-maps/ol-map.directive";
+import { OlMarkerDirective } from "../../ol-maps/ol-marker.directive";
+import { GaAutocompleteDirective } from "../../ol-maps/ga-autocomplete.directive";
+import { SearchResult } from "../../ol-maps/search-result";
 
 @Component({
     selector: "event-form",
     standalone: true,
-    imports: [ReactiveFormsModule, EncodeBase64Directive, ValidationClassesDirective, DatePipe],
+    imports: [ReactiveFormsModule, EncodeBase64Directive, ValidationClassesDirective, DatePipe, OlMapDirective, OlMarkerDirective, GaAutocompleteDirective],
     templateUrl: "./event-form.component.html",
     styleUrl: "./event-form.component.css"
 })
@@ -21,18 +25,25 @@ export class EventFormComponent implements CanComponentDeactivate {
     private eventsService = inject(EventsService);
     private destroyRef = inject(DestroyRef);
     private router = inject(Router);
-
+    
     saved = false;
     today: string = new Date().toISOString().split('T')[0];
     base64image = "";
+    address = "";
+    coordinates = signal<[number, number]>([-0.5, 38.5]);
 
+    changePlace(result: SearchResult) {
+        this.coordinates.set(result.coordinates);
+        this.address = result.address;
+    }
+    
     private fb = inject(NonNullableFormBuilder);
     eventForm = this.fb.group({
         title: ['', [Validators.required, Validators.minLength(5), Validators.pattern('^[a-zA-Z][a-zA-Z ]*$')]],
         date: ['', [Validators.required, minDateValidator(this.today)]],
         description: ['', [Validators.required]],
         price: [0, [Validators.required, Validators.min(0.1)]],
-        image: ['', [Validators.required]]
+        image: ['', [Validators.required]],
     });
 
     /**
@@ -40,12 +51,18 @@ export class EventFormComponent implements CanComponentDeactivate {
      * Navigates user back to "/events" upon creation.
      */
     submitNewEvent(): void {
-        this.eventsService.addEvent({...this.eventForm.getRawValue(), image: this.base64image} as MyEvent)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => {
-            this.saved = true;
-            this.router.navigate(['/events']);
-        });
+        const [lng, lat] = this.coordinates();
+        this.eventsService.addEvent({ 
+                ...this.eventForm.getRawValue(), 
+                image: this.base64image,
+                address: this.address,
+                lat: 0, 
+                lng: 0 } as MyEventInsert)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                this.saved = true;
+                this.router.navigate(['/events']);
+            });
     }
 
     /**
@@ -67,18 +84,4 @@ export class EventFormComponent implements CanComponentDeactivate {
     checkImage(fileInputElement: HTMLInputElement) {
         if (!fileInputElement.files || fileInputElement.files.length === 0) this.base64image = '';
     }
-
-//     This page will contain the form to create a new event. Like in exercise 4,
-// validate the form and don’t let the user send it until it’s valid.
-// Also validate the form and don’t let the user send it until it’s valid.
-// Important: show feedback to the user (colors, messages) so he/she knows
-// what’s valid or not. Like in the unit 1 project, show an input to search for an
-// address and the map with the coordinates where the event will take place.
-
-// Will edit a event. You must reuse the component to add an event (eventform). For example, if you don’t receive an id, add a new event. But, if you
-// receive an id, edit the event (showing the current info in the inputs). Also
-// change the submit button text.
-// Don't worry if the current address doesn't appear in the map's search
-// input. You can show the current address in a paragraph above the map, for
-// example.
 }
