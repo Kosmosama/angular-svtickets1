@@ -5,7 +5,7 @@
             @if (user().me) {
                 <label class="btn btn-sm btn-danger">
                     <i class="bi bi-image"></i>
-                    <input type="file" id="photoInput" class="d-none" encodeBase64 #fileInput (change)="changeAvatar(fileInput)"/>
+                    <input type="file" id="photoInput" class="d-none" encodeBase64 #fileInput (encoded)="changeAvatar($event)"/>
                 </label>
             }
         </div>

@@ -72,18 +72,10 @@ export class ProfilePageComponent {
             });
     }
 
-    // changeAvatar(fileInputElement: HTMLInputElement) {
-    //     if (!fileInputElement.files || fileInputElement.files.length === 0) this.base64image = '';
-    // }
-
-    changeAvatar(fileInputElement: HTMLInputElement) {
-        if (!fileInputElement.files || fileInputElement.files.length === 0) return;
-
-        const base64image = fileInputElement.files?.item(0);
-
+    changeAvatar(base64Image: string) {
         this.profileService
-            .updateAvatar({ avatar: base64image! } as UserPhotoEdit)
-            .subscribe(() => this.user().avatar = base64image);
+            .updateAvatar({ avatar: base64Image } as UserPhotoEdit)
+            .subscribe(() => this.user().avatar = base64Image);
     }
 
     showProfileInfo = signal(true);
