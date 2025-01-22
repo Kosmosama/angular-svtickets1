@@ -1,4 +1,5 @@
 import { MyEvent } from "./my-event";
+import { User } from "./user";
 
 export interface EventsResponse {
     events: MyEvent[];
@@ -13,4 +14,8 @@ export interface SingleEventResponse {
 
 export interface TokenResponse {
     accessToken: string;
+}
+
+export interface UserResponse {
+    user: User;
 }

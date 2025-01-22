@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, effect, inject, signal } from "@angular/core";
+import { Component, DestroyRef, computed, effect, inject, input, signal } from "@angular/core";
 import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
 import { EventCardComponent } from "../event-card/event-card.component";
 import { EventsService } from "../services/events.service";
@@ -20,8 +20,8 @@ export class EventsPageComponent {
 
     events = signal<MyEvent[]>([]);
 
-    creator = signal<number | null>(null);
-    attending = signal<number | null>(null);
+    creator = input<number>();
+    attending = input<number>(); // #TODO Check if I have to do number | null
     more = signal<boolean>(true);
     
     searchControl = new FormControl("");
@@ -57,7 +57,6 @@ export class EventsPageComponent {
             )
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((response: EventsResponse) => {
-                // #TODO Add something like this: "Events created by Pepito. Filtered by party. ordered by price." (Call service that gets user info to get username)
                 this.more.set(response.more);
                 
                 if (this.pageToLoad() === 1) this.events.set(response.events);
