@@ -31,7 +31,7 @@ export class RegisterComponent {
      */
     repeatEmailValidator(): ValidatorFn {
         return ({ parent, value }: AbstractControl) => parent?.get('email')?.value === value ? null : { emailMismatch: true };
-    }    
+    }
 
     registerForm = this.fb.group({
         name: ['', Validators.required],
@@ -62,14 +62,11 @@ export class RegisterComponent {
             return;
         }
 
-        const user: User = {
-            ...this.registerForm.getRawValue(),
-            avatar: this.base64image,
-        };
-        console.log(user);
-
         this.authService
-            .register(user)
+            .register({
+                ...this.registerForm.getRawValue(),
+                avatar: this.base64image,
+            } as User)
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
                 this.saved = true;

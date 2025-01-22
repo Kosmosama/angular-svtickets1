@@ -1,19 +1,90 @@
-import { Component, input, signal } from '@angular/core';
-import { User } from '../../shared/interfaces/user';
+import { Component, DestroyRef, inject, input, signal } from '@angular/core';
+import { User, UserPasswordEdit, UserPhotoEdit, UserProfileEdit } from '../../shared/interfaces/user';
 import { OlMapDirective } from '../../ol-maps/ol-map.directive';
 import { OlMarkerDirective } from '../../ol-maps/ol-marker.directive';
 import { RouterLink } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import { ValidationClassesDirective } from '../../shared/directives/valdation-classes.directive';
+import { ProfileService } from '../services/profile.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EncodeBase64Directive } from '../../shared/directives/encode-base64.directive';
 
 @Component({
     selector: 'profile-page',
     standalone: true,
-    imports: [RouterLink, OlMapDirective, OlMarkerDirective, ReactiveFormsModule],
+    imports: [RouterLink, OlMapDirective, OlMarkerDirective, ReactiveFormsModule, ValidationClassesDirective, EncodeBase64Directive],
     templateUrl: './profile-page.component.html',
     styleUrl: './profile-page.component.css'
 })
 export class ProfilePageComponent {
+    private fb = inject(NonNullableFormBuilder);
+    private profileService = inject(ProfileService);
+    private destroyRef = inject(DestroyRef);
+
     user = input.required<User>();
+
+    /**
+     * Validator function to check if the repeated password matches the original password.
+     * 
+     * @returns A ValidatorFn that returns null if the passwords match, or an object with the key `passwordMismatch` set to true if they do not.
+     */
+    repeatPasswordValidator(): ValidatorFn {
+        return ({ parent, value }: AbstractControl) => parent?.get('password')?.value === value ? null : { passwordMismatch: true };
+    }
+
+    profileForm = this.fb.group({
+        email: ['', [Validators.required, Validators.email]],
+        name: ['', [Validators.required]]
+    });
+
+    passwordForm = this.fb.group({
+        password: ['', [Validators.required, Validators.minLength(4)]],
+        password2: ['', [Validators.required, Validators.minLength(4), this.repeatPasswordValidator()]]
+    });
+
+    changeProfile() {
+        if (this.profileForm.invalid) {
+            this.profileForm.markAllAsTouched();
+            return;
+        }
+
+        this.profileService
+            .updateProfile({...this.profileForm.getRawValue()} as UserProfileEdit)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((response: UserProfileEdit) => {
+                this.user().email = response.email;
+                this.user().name = response.name;
+                this.cancelEdit();
+            });
+    }
+
+    changePassword() {
+        if (this.passwordForm.invalid) {
+            this.passwordForm.markAllAsTouched();
+            return;
+        }
+
+        this.profileService
+            .updatePassword({ password: this.passwordForm.get('password')?.value } as UserPasswordEdit)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                this.cancelEdit();
+            });
+    }
+
+    // changeAvatar(fileInputElement: HTMLInputElement) {
+    //     if (!fileInputElement.files || fileInputElement.files.length === 0) this.base64image = '';
+    // }
+
+    changeAvatar(fileInputElement: HTMLInputElement) {
+        if (!fileInputElement.files || fileInputElement.files.length === 0) return;
+
+        const base64image = fileInputElement.files?.item(0);
+
+        this.profileService
+            .updateAvatar({ avatar: base64image! } as UserPhotoEdit)
+            .subscribe(() => this.user().avatar = base64image);
+    }
 
     showProfileInfo = signal(true);
     showProfileForm = signal(false);

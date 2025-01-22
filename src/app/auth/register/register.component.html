@@ -4,6 +4,12 @@
     <div class="mb-3">
         <label for="name">Name:</label>
         <input type="text" class="form-control" id="name" name="name" placeholder="Name" formControlName="name"/>
+
+        @let nameErrors = registerForm.get('name')?.errors;
+
+        @if(nameErrors?.['required']) {
+            <div class="invalid-feedback">Name cannot be empty.</div>
+        }
     </div>
     <div class="mb-3">
         <label for="email">Email:</label>

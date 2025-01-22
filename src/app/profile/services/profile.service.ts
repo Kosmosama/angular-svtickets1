@@ -22,7 +22,7 @@ export class ProfileService {
             .get<UserResponse>(id ? `users/${id}` : "users/me")
             .pipe(map((resp: UserResponse) => resp.user));
     }
-    
+
     /**
      * Updates the profile of the currently authenticated user.
      *
@@ -41,7 +41,7 @@ export class ProfileService {
      * 
      * @returns {Observable<UserPhotoEdit>} An Observable that emits the updated UserPhotoEdit object.
      */
-    updatePhoto(data: UserPhotoEdit): Observable<UserPhotoEdit> {
+    updateAvatar(data: UserPhotoEdit): Observable<UserPhotoEdit> {
         return this.http.put<UserPhotoEdit>("users/me/photo", data);
     }
 
@@ -52,7 +52,7 @@ export class ProfileService {
      * 
      * @returns {Observable<UserPasswordEdit>} An Observable that emits the updated UserPasswordEdit object.
      */
-    updatePassword(data: UserPasswordEdit): Observable<UserPasswordEdit> {
-        return this.http.put<UserPasswordEdit>("users/me/password", data);
+    updatePassword(data: UserPasswordEdit): Observable<void> {
+        return this.http.put<void>("users/me/password", data);
     }
 }
