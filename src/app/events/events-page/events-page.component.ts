@@ -1,13 +1,16 @@
-import { Component, DestroyRef, computed, inject, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Component, DestroyRef, computed, effect, inject, signal } from "@angular/core";
+import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
 import { EventCardComponent } from "../event-card/event-card.component";
 import { EventsService } from "../services/events.service";
 import { MyEvent } from "../../shared/interfaces/my-event";
+import { debounceTime, distinctUntilChanged } from "rxjs";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { EventsResponse } from "../../shared/interfaces/responses";
 
 @Component({
     selector: "events-page",
     standalone: true,
-    imports: [EventCardComponent],
+    imports: [EventCardComponent, ReactiveFormsModule],
     templateUrl: "./events-page.component.html",
     styleUrl: "./events-page.component.css"
 })
@@ -16,40 +19,51 @@ export class EventsPageComponent {
     private destroyRef = inject(DestroyRef);
 
     events = signal<MyEvent[]>([]);
-    searchValue = signal<string>("");
-    orderCriteria = signal<string>("distance");
 
-    filteredEvents = computed(() => {
-        const search = this.searchValue().toLowerCase().trim();
-        const criteria = this.orderCriteria();
+    creator = signal<number | null>(null);
+    attending = signal<number | null>(null);
+    more = signal<boolean>(true);
+    
+    searchControl = new FormControl("");
+    searchValue = toSignal(
+        this.searchControl.valueChanges.pipe(
+            debounceTime(600),
+            distinctUntilChanged()
+        )
+    );
+    orderCriteria = signal<"date" | "price">("date");
+    pageToLoad = signal<number>(1);
 
-        // Filter based on search value
-        let filtered = this.events().filter(event =>
-            event.title.toLowerCase().includes(search) || event.description.toLowerCase().includes(search)
-        );
+    filterSummary = computed(() => {
+        const filters: string[] = [];
 
-        // Apply sorting based on criteria
-        if (criteria === 'date') {
-            filtered = filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        } else if (criteria === 'price') {
-            filtered = filtered.sort((a, b) => a.price - b.price);
-        }
+        if (this.creator()) filters.push(`Events created by: User ${this.creator()}`);
+        if (this.searchValue()) filters.push(`Searching by: "${this.searchValue()}"`);
+        if (this.orderCriteria()) filters.push(`Ordering by: ${this.orderCriteria()}`);
+        if (this.attending()) filters.push("Showing attending only");
 
-        return filtered;
+        return filters.length ? filters.join(". ") + "." : "No filters applied.";
     });
-
+    
     constructor() {
-        this.fetchEvents();
-    }
-
-    /**
-     * Fetches the list of events from the server and updates local state.
-     */
-    fetchEvents(): void {
-        this.eventsService
-            .getEvents()
+        effect(() => {
+            this.eventsService
+            .getEvents(
+                this.searchValue()!,
+                this.pageToLoad(),
+                this.orderCriteria(),
+                this.creator(),
+                this.attending()
+            )
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(response => this.events.set(response.events));
+            .subscribe((response: EventsResponse) => {
+                // #TODO Add something like this: "Events created by Pepito. Filtered by party. ordered by price." (Call service that gets user info to get username)
+                this.more.set(response.more);
+                
+                if (this.pageToLoad() === 1) this.events.set(response.events);
+                else this.events.update((events) => [...events, ...response.events]);
+            });
+        });
     }
 
     /**
@@ -59,24 +73,21 @@ export class EventsPageComponent {
      */
     handleEventDeleted(id: number): void {
         this.eventsService.deleteEvent(id)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => this.fetchEvents());
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.events.update(events => events.filter(event => event.id !== id)));
     }
 
     /**
-     * Updates the search value based on user input and refilters events.
-     * 
-     * @param event The input event from the search box.
+     * Updates orderCriteria criteria signal.
      */
-    onSearchInput(event: Event): void {
-        const input = event.target as HTMLInputElement;
-        this.searchValue.set(input.value);
-    }
-
-    /**
-     * Updates order criteria signal.
-     */
-    orderBy(method: string): void {
+    orderBy(method: "date" | "price"): void {
         this.orderCriteria.set(method);
+    }
+
+    /**
+     * Increments the current page number to load more events.
+     */
+    loadMoreEvents() {
+        this.pageToLoad.update((page) => page + 1);
     }
 }
