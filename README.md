@@ -28,22 +28,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO
 
-### /EVENTS/{id}
-- Show map.
-- List of users attending. Replaced and reshown when user clicks attend.
-- Show comments. (html in event-detail.html)
-    - .user-info { width: 8rem; .avatar { width: 4rem; } }
-    - .comment { white-space: pre-wrap; }
-- Show form to create comment with rxResource. (Only input for comment and button to send it {POST → /events/:id/comments | format: { comment: "User comment" } | returns comment})
-    ```html
-    <form class="mt-4">
-        <div class="form-group">
-            <textarea class="form-control" name="comment" placeholder="Write a comment"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary mt-3">Send</button>
-    </form>
-    ```
-
 ### /EVENTS/{id}/EDIT
 - Reuse form to add an event. (ex: if no id is received, add; Otherwise, show info in inputs)
     - Change submit button text.
