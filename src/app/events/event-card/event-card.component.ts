@@ -22,6 +22,7 @@ export class EventCardComponent {
 
     event = input.required<MyEvent>();
     deleted = output<number>();
+    attend = output<boolean>();
 
     /**
      * Deletes himself from server and emits its own id upon deletion.
@@ -43,6 +44,7 @@ export class EventCardComponent {
             .subscribe((updatedStatus) => {
                 this.event().attend = updatedStatus;
                 this.event().numAttend += updatedStatus ? 1 : -1;
+                this.attend.emit(updatedStatus);
                 this.cdr.markForCheck();
             });
     }

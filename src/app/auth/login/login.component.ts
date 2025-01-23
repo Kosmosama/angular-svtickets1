@@ -24,7 +24,7 @@ export class LoginComponent {
 
     loginForm = this.fb.group({
         email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required]]
+        password: ['', [Validators.required]],
     });
 
     /**
@@ -81,6 +81,11 @@ export class LoginComponent {
      * Handles form-based login, including geolocation and navigation.
      */
     loginWithForm(): void {
+        if (this.loginForm.invalid) {
+            this.loginForm.markAllAsTouched();
+            return;
+        }
+
         const user: UserLogin = {
             ...this.loginForm.getRawValue(),
             lat: 0,

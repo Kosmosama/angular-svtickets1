@@ -20,6 +20,7 @@ export class RegisterComponent {
     private fb = inject(NonNullableFormBuilder);
     private router = inject(Router);
     private destroyRef = inject(DestroyRef);
+    // private modal = inject();   
 
     saved = false;
     base64image = "";

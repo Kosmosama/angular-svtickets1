@@ -29,10 +29,9 @@ export class AuthService {
 
     /**
      * Validates the provided authentication token.
-     * @param {string} token - The authentication token to validate.
      * @returns {Observable<boolean>} An observable emitting true if the token is valid, or false otherwise.
      */
-    private validateToken(token: string): Observable<boolean> {
+    private validateToken(): Observable<boolean> {
         return this.http
             .get("auth/validate")
             .pipe(
@@ -100,6 +99,6 @@ export class AuthService {
         if (!token) return of(false);
 
         // Token exists, validate it
-        return this.validateToken(token);
+        return this.validateToken();
     }
 }

@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { MyEvent, MyEventInsert } from '../../shared/interfaces/my-event';
+import { Comment, MyEvent, MyEventInsert } from '../../shared/interfaces/my-event';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { EventsResponse, SingleEventResponse } from '../../shared/interfaces/responses';
+import { CommentResponse, CommentsResponse, EventsResponse, SingleEventResponse, UsersResponse } from '../../shared/interfaces/responses';
+import { User } from '../../shared/interfaces/user';
 
 @Injectable({
     providedIn: 'root'
@@ -87,6 +88,39 @@ export class EventsService {
             .pipe(map(() => !attending));
     }
 
-    // Events service → All operations related with events (including attending
-    //     and comments).
+    /**
+     * Retrieves the comments for a specific event.
+     *
+     * @param eventId - The ID of the event for which to retrieve comments.
+     * @returns An Observable that emits an array of Comment objects.
+     */
+    getComments(eventId: number): Observable<Comment[]> {
+        return this.http
+            .get<CommentsResponse>(`events/${eventId}/comments`)
+            .pipe(map((response: CommentsResponse) => response.comments));
+    }
+
+    /**
+     * Posts a new comment for a specific event.
+     *
+     * @param eventId - The ID of the event to comment on.
+     * @param comment - The comment text to post.
+     * @returns An Observable that emits the posted Comment object.
+     */
+    postComment(eventId: number, comment: string): Observable<Comment> {
+        return this.http.post<Comment>(`events/${eventId}/comments`, { comment } as Comment);
+    }
+
+    /**
+     * Retrieves the attendees for a specific event.
+     *
+     * @param eventId - The ID of the event for which to retrieve attendees.
+     * 
+     * @returns An Observable that emits an array of User objects.
+     */
+    getAttendees(eventId: number): Observable<User[]> {
+        return this.http
+            .get<UsersResponse>(`events/${eventId}/attend`)
+            .pipe(map((response: UsersResponse) => response.users));
+    }
 }
