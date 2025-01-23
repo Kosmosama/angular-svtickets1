@@ -28,17 +28,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO
 
-### /EVENTS
-- Show confirm dialog to delete (ngBootstrap or ngx-sweetalert2).
-- Filtering and ordering events
-    - Search input stored in a signal, use toSignal to update value & debounceTime(600ms) [Reference](https://fullstackpro.es/courses/curso-angular/reactive-forms#busqueda-con-retardo-debounce)
-    - Order value will also be a signal
-    - Use effect function and create dependencies reading the values of the 3 signals above. Call corresponding service to load events based on these params.
-    - In both approaches, if page = 1, replace events with result; Otherwise, concatenate.
-- Use input for "creator" and "attending" (can be null).
-    - Include both in effect function and call corresponding method. (do it by hand, GET /events doesnt do it)
-    - Add something like this: "Events created by Pepito. Filtered by party. Ordered by price." (Call service that gets user info to get username)
-
 ### /EVENTS/{id}
 - Show map.
 - List of users attending. Replaced and reshown when user clicks attend.
@@ -55,26 +44,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
     </form>
     ```
 
-### /EVENTS/ADD
-- Fix.
-- Shouldn't be able to send it until it is valid.
-- Input for address. (The map thing)
-
 ### /EVENTS/{id}/EDIT
 - Reuse form to add an event. (ex: if no id is received, add; Otherwise, show info in inputs)
     - Change submit button text.
-
-### /PROFILE/ME | /PROFILE/{id}
-- Show user profile info. (Map + marker too)
-- No id = Show current logged user; Otherwise, show id user.
-- Show edit profile, image and password only if user is me.
-- Add the following buttons:
-    - "Events user has created" --> redirect to /events?creator={id}
-    - "Events user is attending" --> redirect to /events?attending={id}
-    - Send params like this:
-        ```html
-        <a [routerLink]="['/events']" [queryParams]="{ creator: user.id }">Created events</a>
-        ```
-
-### RESOLVERS
-- Get basic data from [event detail], [event edit] and [profile] with resolvers before showing the page.
