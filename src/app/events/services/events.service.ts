@@ -15,7 +15,7 @@ export class EventsService {
      * 
      * @param {string} search - The search query to filter events.
      * @param {number} page - The page number for pagination.
-     * @param {"date" | "price"} order - The order to sort the events by.
+     * @param {"distance" | "date" | "price"} order - The order to sort the events by.
      * @param {number | null} creator - The ID of the event creator, or null if not applicable.
      * @param {number | null} attending - The ID of the user attending, or null if not applicable.
      * 
@@ -24,7 +24,7 @@ export class EventsService {
     getEvents(
         search: string = "",
         page: number = 1,
-        order: "date" | "price" = "date",
+        order: "distance" | "date" | "price" = "distance",
         creator: number | null = null,
         attending: number | null = null
     ): Observable<EventsResponse> {

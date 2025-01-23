@@ -6,6 +6,7 @@ import { MyEvent } from "../../shared/interfaces/my-event";
 import { debounceTime, distinctUntilChanged } from "rxjs";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { EventsResponse } from "../../shared/interfaces/responses";
+import { ProfileService } from "../../profile/services/profile.service";
 
 @Component({
     selector: "events-page",
@@ -16,12 +17,13 @@ import { EventsResponse } from "../../shared/interfaces/responses";
 })
 export class EventsPageComponent {
     private eventsService = inject(EventsService);
+    private profileService = inject(ProfileService);
     private destroyRef = inject(DestroyRef);
 
     events = signal<MyEvent[]>([]);
 
     creator = input<number>();
-    attending = input<number>(); // #TODO Check if I have to do number | null
+    attending = input<number>();
     more = signal<boolean>(true);
     
     searchControl = new FormControl("");
@@ -31,19 +33,10 @@ export class EventsPageComponent {
             distinctUntilChanged()
         )
     );
-    orderCriteria = signal<"date" | "price">("date");
+    orderCriteria = signal<"distance" | "date" | "price">("distance");
     pageToLoad = signal<number>(1);
 
-    filterSummary = computed(() => {
-        const filters: string[] = [];
-
-        if (this.creator()) filters.push(`Events created by: User ${this.creator()}`);
-        if (this.searchValue()) filters.push(`Searching by: "${this.searchValue()}"`);
-        if (this.orderCriteria()) filters.push(`Ordering by: ${this.orderCriteria()}`);
-        if (this.attending()) filters.push("Showing attending only");
-
-        return filters.length ? filters.join(". ") + "." : "No filters applied.";
-    });
+    filterSummary = signal<string>("");
     
     constructor() {
         effect(() => {
@@ -63,6 +56,22 @@ export class EventsPageComponent {
                 else this.events.update((events) => [...events, ...response.events]);
             });
         });
+
+        effect(() => {
+            const filters: string[] = [];
+
+            if (this.searchValue()) filters.push(`Searching by: "${this.searchValue()}"`);
+            if (this.orderCriteria()) filters.push(`Ordering by: ${this.orderCriteria()}`);
+            if (this.attending()) filters.push("Showing attending only");
+            if (this.creator()) {
+                this.profileService.getUser(this.creator()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe((user) => {
+                    filters.push(`Events created by: User ${user.name}`);
+                    this.filterSummary.set(filters.length ? filters.join(". ") + "." : "No filters applied.");
+                });
+            }
+
+            this.filterSummary.set(filters.length ? filters.join(". ") + "." : "No filters applied.");
+        });
     }
 
     /**
@@ -79,7 +88,8 @@ export class EventsPageComponent {
     /**
      * Updates orderCriteria criteria signal.
      */
-    orderBy(method: "date" | "price"): void {
+    orderBy(method: "distance" | "date" | "price"): void {
+        this.pageToLoad.set(1);
         this.orderCriteria.set(method);
     }
 
