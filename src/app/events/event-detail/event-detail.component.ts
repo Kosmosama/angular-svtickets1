@@ -51,7 +51,7 @@ export class EventDetailComponent {
             this.comments.set(comments);
         });
     }
-    
+
     /**
      * Fetches and sets the attendees for the given event ID.
      * @param id - The ID of the event.
@@ -87,3 +87,5 @@ export class EventDetailComponent {
         this.router.navigate(['/events']);
     }
 }
+
+// #TODO Use rxResource to load attendees and comments (wtf)

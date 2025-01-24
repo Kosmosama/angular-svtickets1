@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ValidationClassesDirective } from '../../shared/directives/valdation-classes.directive';
 import { ThirdPartyLogin, UserLogin } from '../../shared/interfaces/user';
@@ -21,6 +21,8 @@ export class LoginComponent {
     private fb = inject(NonNullableFormBuilder);
     private router = inject(Router);
     private destroyRef = inject(DestroyRef);
+
+    loginErrorCode = signal<number | null>(null);
 
     loginForm = this.fb.group({
         email: ['', [Validators.required, Validators.email]],
@@ -81,6 +83,8 @@ export class LoginComponent {
      * Handles form-based login, including geolocation and navigation.
      */
     loginWithForm(): void {
+        this.loginErrorCode.set(null);
+
         if (this.loginForm.invalid) {
             this.loginForm.markAllAsTouched();
             return;
@@ -94,8 +98,11 @@ export class LoginComponent {
 
         this.login(user)
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(() => {
-                this.router.navigate(['/events']);
+            .subscribe({
+                next: () => { this.router.navigate(['/events']); },
+                error: (error) => { 
+                    this.loginErrorCode.set(error.status); 
+                }
             });
     }
 }

@@ -1,5 +1,9 @@
 <form class="mt-4" (ngSubmit)="register()" [formGroup]="registerForm">
     <legend>Create an account</legend>
+    
+    @if(registerErrorCode() === 400) {
+        <div class="alert alert-danger">User with that email already exists.</div>
+    }
 
     <div class="mb-3">
         <label for="name">Name:</label>
@@ -21,17 +25,12 @@
             <div class="invalid-feedback">Email already exists.</div>
         } -->
 
-        @if(emailExists()) {
-            <div class="alert alert-danger">Email already exists.</div>
+        @if(emailErrors?.['required']) {
+            <div class="invalid-feedback">Email cannot be empty.</div>
         }
-        @else {
-            @if(emailErrors?.['required']) {
-                <div class="invalid-feedback">Email cannot be empty.</div>
-            }
-        
-            @if(emailErrors?.['email']) {
-                <div class="invalid-feedback">Email must be an email.</div>
-            }
+    
+        @if(emailErrors?.['email']) {
+            <div class="invalid-feedback">Email must be an email.</div>
         }
 
     </div>

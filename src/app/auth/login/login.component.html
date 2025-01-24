@@ -1,6 +1,10 @@
 <form class="mt-4" (ngSubmit)="loginWithForm()" [formGroup]="loginForm">
     <legend>Welcome to SVTickets!</legend>
 
+    @if(loginErrorCode() === 401) {
+        <div class="alert alert-danger">Email or password are incorrect.</div>
+    }
+
     <div class="mb-3">
         <label for="email">Email:</label>
         <input type="email" class="form-control" name="email" id="email" placeholder="Email" required formControlName="email" [validationClasses]="{valid: 'is-valid', invalid: 'is-invalid'}"/>

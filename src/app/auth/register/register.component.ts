@@ -22,7 +22,7 @@ export class RegisterComponent {
     private destroyRef = inject(DestroyRef);
     // private modal = inject(); // Can't install ngBootsrap
 
-    emailExists = signal<boolean>(false);
+    registerErrorCode = signal<number | null>(null);
 
     saved = false;
     base64image = "";
@@ -60,7 +60,7 @@ export class RegisterComponent {
      * Submits the registration form and navigates to the login page upon success.
      */
     register() {
-        this.emailExists.set(false);
+        this.registerErrorCode.set(null);
 
         if (this.registerForm.invalid) {
             this.registerForm.markAllAsTouched();
@@ -78,11 +78,12 @@ export class RegisterComponent {
                     this.saved = true;
                     this.router.navigate(['/auth/login']);
                 },
-                error: () => {
+                error: (error) => {
                     // this.registerForm.get('email')?.setErrors({ serverError: true});
-                    this.emailExists.set(true);
+                    this.registerErrorCode.set(error.status);
                     this.registerForm.get('email')?.setValue('');
                     this.registerForm.get('repeatEmail')?.setValue('');
+                    window.scrollTo(0, 0);
                 },
             });
     }
@@ -104,8 +105,8 @@ export class RegisterComponent {
                     this.registerForm.get('lat')?.setValue(coords.latitude);
                     this.registerForm.get('lng')?.setValue(coords.longitude);
                 })
-                .catch((err) => {
-                    console.log(err);
+                .catch((error) => {
+                    console.warn(error);
                 });
         })
     }
