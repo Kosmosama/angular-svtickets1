@@ -34,7 +34,7 @@ export class EventDetailComponent {
 
     constructor() {
         effect(() => {
-            if(this.event()) {
+            if (this.event()) {
                 this.titleService.setTitle(this.event()!.title + ' | SVtickets');
                 this.showComments(this.event().id);
                 this.showAttendees(this.event().id);
@@ -42,29 +42,42 @@ export class EventDetailComponent {
         });
     }
 
+    /**
+     * Fetches and sets the comments for the given event ID.
+     * @param id - The ID of the event.
+     */
     showComments(id: number) {
         this.eventService.getComments(id).subscribe((comments) => {
             this.comments.set(comments);
         });
     }
-
+    
+    /**
+     * Fetches and sets the attendees for the given event ID.
+     * @param id - The ID of the event.
+     */
     showAttendees(id: number) {
         this.eventService.getAttendees(id).subscribe((attendees) => {
             this.attendees.set(attendees);
         });
     }
 
+    /**
+     * Adds a new comment to the event.
+     * Validates the comment form and posts the comment if valid.
+     * Resets the comment form after posting.
+     */
     addComment() {
         if (this.commentForm.invalid) {
             this.commentForm.markAllAsTouched();
             return;
         }
-        
+
         this.eventService.postComment(this.event().id, this.commentForm.get('comment')!.value).subscribe((comment) => {
             this.comments.update((comments) => [comment, ...comments]);
         });
 
-        this.commentForm.reset(); // #TODO Doesnt work
+        this.commentForm.reset();
     }
 
     /**
@@ -73,18 +86,4 @@ export class EventDetailComponent {
     goBack() {
         this.router.navigate(['/events']);
     }
-
-    log(smth: any) {
-        console.log(smth);
-    }
-
-    // Delete -> Redirect to /events
-    // Edit
-
-    // Get attendees on load + every time the user changes attending status, get the list again and replace
-
-    // Create form to add comment
-    // Get comments
-    // addComment -> {post} /events/:id/comments
-    // Add comment to the list without reloading
 }

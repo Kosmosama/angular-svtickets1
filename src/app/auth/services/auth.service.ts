@@ -96,9 +96,11 @@ export class AuthService {
         let token = this.cookieService.get("token");
         if(!isPlatformBrowser(this.platformId)) {
             token = this.request!.headers.get("cookie")?.split("; ").find((cookie) => cookie.startsWith("token="))?.split("=")[1]!;
-        } else {
-            console.log(document.cookie);
-        }
+            // console.log(this.request);
+        } 
+        // else {
+        //     console.log(document.cookie);
+        // }
 
         // User is logged if signal is true
         if (this.#logged()) return of(true);

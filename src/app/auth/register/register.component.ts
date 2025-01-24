@@ -1,4 +1,4 @@
-import { afterNextRender, Component, DestroyRef, inject } from '@angular/core';
+import { afterNextRender, Component, DestroyRef, inject, signal } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { EncodeBase64Directive } from '../../shared/directives/encode-base64.directive';
@@ -20,7 +20,9 @@ export class RegisterComponent {
     private fb = inject(NonNullableFormBuilder);
     private router = inject(Router);
     private destroyRef = inject(DestroyRef);
-    // private modal = inject();   
+    // private modal = inject(); // Can't install ngBootsrap
+
+    emailExists = signal<boolean>(false);
 
     saved = false;
     base64image = "";
@@ -58,6 +60,8 @@ export class RegisterComponent {
      * Submits the registration form and navigates to the login page upon success.
      */
     register() {
+        this.emailExists.set(false);
+
         if (this.registerForm.invalid) {
             this.registerForm.markAllAsTouched();
             return;
@@ -74,7 +78,12 @@ export class RegisterComponent {
                     this.saved = true;
                     this.router.navigate(['/auth/login']);
                 },
-                error: (error) => console.error(error),
+                error: () => {
+                    // this.registerForm.get('email')?.setErrors({ serverError: true});
+                    this.emailExists.set(true);
+                    this.registerForm.get('email')?.setValue('');
+                    this.registerForm.get('repeatEmail')?.setValue('');
+                },
             });
     }
 

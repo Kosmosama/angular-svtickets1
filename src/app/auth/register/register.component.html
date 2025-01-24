@@ -16,21 +16,31 @@
         <input type="email" class="form-control" name="email" id="email" placeholder="Email" required formControlName="email" [validationClasses]="{valid: 'is-valid', invalid: 'is-invalid'}"/>
     
         @let emailErrors = registerForm.get('email')?.errors;
+        
+        <!-- @if(emailErrors?.['serverError']) {
+            <div class="invalid-feedback">Email already exists.</div>
+        } -->
 
-        @if(emailErrors?.['required']) {
-            <div class="invalid-feedback">Email cannot be empty.</div>
+        @if(emailExists()) {
+            <div class="alert alert-danger">Email already exists.</div>
         }
-    
-        @if(emailErrors?.['email']) {
-            <div class="invalid-feedback">Email must be an email.</div>
+        @else {
+            @if(emailErrors?.['required']) {
+                <div class="invalid-feedback">Email cannot be empty.</div>
+            }
+        
+            @if(emailErrors?.['email']) {
+                <div class="invalid-feedback">Email must be an email.</div>
+            }
         }
+
     </div>
     <div class="mb-3">
         <label for="repeatEmail">Repeat Email:</label>
         <input type="email" class="form-control" id="repeatEmail" name="repeatEmail" placeholder="Repeat Email" required formControlName="repeatEmail" [validationClasses]="{valid: 'is-valid', invalid: 'is-invalid'}"/>
     
         @let repeatEmailErrors = registerForm.get('repeatEmail')?.errors;
-        
+
         @if(repeatEmailErrors?.['required']) {
             <div class="invalid-feedback">Email cannot be empty.</div>
         }
@@ -83,5 +93,5 @@
 
     <p class="text-danger" id="errorInfo"></p>
     <a class="btn btn-secondary" [routerLink]="['/auth/login']" role="button">Go back</a>
-    <button type="submit" class="btn btn-primary">Create account</button>
+    <button type="submit" class="btn btn-primary" [disabled]="registerForm.invalid">Create account</button>
 </form>
