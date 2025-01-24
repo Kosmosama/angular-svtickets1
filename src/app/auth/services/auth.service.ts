@@ -1,19 +1,18 @@
 import { HttpClient } from "@angular/common/http";
-import { inject, Injectable, PLATFORM_ID, REQUEST, Signal, signal, WritableSignal } from "@angular/core";
-import { SsrCookieService } from "ngx-cookie-service-ssr";
-import { ThirdPartyLogin, User, UserLogin } from "../../shared/interfaces/user";
+import { inject, Injectable, Signal, signal, WritableSignal } from "@angular/core";
+import { CookieService } from "ngx-cookie-service";
 import { catchError, map, Observable, of } from "rxjs";
 import { TokenResponse } from "../../shared/interfaces/responses";
-import { isPlatformBrowser } from "@angular/common";
+import { ThirdPartyLogin, User, UserLogin } from "../../shared/interfaces/user";
+import { SsrCookieService } from "../../shared/services/ssr-cookie.service";
 
 @Injectable({
     providedIn: "root"
 })
 export class AuthService {
     private http = inject(HttpClient);
-    private cookieService = inject(SsrCookieService);
-    private platformId = inject(PLATFORM_ID);
-    private request = inject(REQUEST);
+    private cookieService = inject(CookieService);
+    private ssrCookieService = inject(SsrCookieService);
 
     #logged: WritableSignal<boolean> = signal(false);
 
@@ -41,11 +40,7 @@ export class AuthService {
             .post<TokenResponse>(endpoint, payload)
             .pipe(
                 map(({ accessToken }: TokenResponse) => {
-                    // Replace token in cookies (at some point I found I had 3)
-                    if (this.cookieService.get("token"))
-                        this.cookieService.delete("token");
                     this.cookieService.set("token", accessToken, 365, "/");
-
                     this.#logged.set(true);
                 })
             );
@@ -93,14 +88,7 @@ export class AuthService {
      * @returns {Observable<boolean>} An observable emitting true if the user is logged in, or false otherwise.
      */
     isLogged(): Observable<boolean> {
-        let token = this.cookieService.get("token");
-        if(!isPlatformBrowser(this.platformId)) {
-            token = this.request!.headers.get("cookie")?.split("; ").find((cookie) => cookie.startsWith("token="))?.split("=")[1]!;
-            // console.log(this.request);
-        } 
-        // else {
-        //     console.log(document.cookie);
-        // }
+        const token = this.ssrCookieService.getCookie('token');
 
         // User is logged if signal is true
         if (this.#logged()) return of(true);

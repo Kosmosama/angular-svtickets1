@@ -1,17 +1,15 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { SsrCookieService } from 'ngx-cookie-service-ssr';
+import { SsrCookieService } from '../services/ssr-cookie.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-    const cookieService = inject(SsrCookieService);
+    const token = inject(SsrCookieService).getCookie('token');
 
-    const token = cookieService.get("token");
-
-    if (token) {
+    if (token) { // Estamos autenticados
         const authReq = req.clone({
-            headers: req.headers.set("Authorization", "Bearer " + token)
-        })
-        return next(authReq);
+            headers: req.headers.set('Authorization', 'Bearer ' + token),
+        });
+        return next(authReq); // Petición con credenciales
     }
-    return next(req);
+    return next(req); // Petición sin credenciales
 };
