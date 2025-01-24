@@ -13,6 +13,8 @@ import { OlMapDirective } from "../../ol-maps/ol-map.directive";
 import { OlMarkerDirective } from "../../ol-maps/ol-marker.directive";
 import { GaAutocompleteDirective } from "../../ol-maps/ga-autocomplete.directive";
 import { SearchResult } from "../../ol-maps/search-result";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { ConfirmModalComponent } from "../../shared/modals/confirm-modal/confirm-modal.component";
 
 @Component({
     selector: "event-form",
@@ -25,7 +27,8 @@ export class EventFormComponent implements CanComponentDeactivate {
     private eventsService = inject(EventsService);
     private destroyRef = inject(DestroyRef);
     private router = inject(Router);
-    
+    private modalService = inject(NgbModal);
+
     saved = false;
     today: string = new Date().toISOString().split('T')[0];
     base64image = "";
@@ -36,7 +39,7 @@ export class EventFormComponent implements CanComponentDeactivate {
         this.coordinates.set(result.coordinates);
         this.address = result.address;
     }
-    
+
     private fb = inject(NonNullableFormBuilder);
     eventForm = this.fb.group({
         title: ['', [Validators.required, Validators.minLength(5), Validators.pattern('^[a-zA-Z][a-zA-Z ]*$')]],
@@ -52,12 +55,13 @@ export class EventFormComponent implements CanComponentDeactivate {
      */
     submitNewEvent(): void {
         const [lng, lat] = this.coordinates();
-        this.eventsService.addEvent({ 
-                ...this.eventForm.getRawValue(), 
-                image: this.base64image,
-                address: this.address,
-                lat: 0, 
-                lng: 0 } as MyEventInsert)
+        this.eventsService.addEvent({
+            ...this.eventForm.getRawValue(),
+            image: this.base64image,
+            address: this.address,
+            lat: 0,
+            lng: 0
+        } as MyEventInsert)
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
                 this.saved = true;
@@ -72,7 +76,12 @@ export class EventFormComponent implements CanComponentDeactivate {
      * @returns "True" if the changes were saved, form values were not changed or the user confirms the dialog, otherwise "False".
      */
     canDeactivate() {
-        return this.saved || this.eventForm.pristine || confirm('Do you want to leave the page?. Changes will be lost...');
+        if (this.saved || this.eventForm.pristine) return true;
+
+        const modalRef = this.modalService.open(ConfirmModalComponent);
+        modalRef.componentInstance.title = 'Changes will not be saved';
+        modalRef.componentInstance.body = 'Do you want to leave the page?. Changes will be lost...';
+        return modalRef.result.catch(() => false);
     }
 
     /**

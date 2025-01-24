@@ -7,6 +7,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ValidationClassesDirective } from '../../shared/directives/valdation-classes.directive';
 import { Router, RouterLink } from '@angular/router';
 import { GeolocationService } from '../services/geolocation.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmModalComponent } from '../../shared/modals/confirm-modal/confirm-modal.component';
 
 @Component({
     selector: 'register',
@@ -20,12 +22,25 @@ export class RegisterComponent {
     private fb = inject(NonNullableFormBuilder);
     private router = inject(Router);
     private destroyRef = inject(DestroyRef);
-    // private modal = inject(); // Can't install ngBootsrap
+    private modalService = inject(NgbModal);
 
     registerErrorCode = signal<number | null>(null);
 
     saved = false;
     base64image = "";
+
+    constructor() {
+        afterNextRender(() => {
+            GeolocationService.getLocation()
+                .then((coords) => {
+                    this.registerForm.get('lat')?.setValue(coords.latitude);
+                    this.registerForm.get('lng')?.setValue(coords.longitude);
+                })
+                .catch((error) => {
+                    console.warn(error);
+                });
+        })
+    }
 
     /**
      * Validator function to check if the repeated email matches the original email.
@@ -95,19 +110,11 @@ export class RegisterComponent {
      * @returns "True" if the changes were saved, form values were not changed or the user confirms the dialog, otherwise "False".
      */
     canDeactivate() {
-        return this.saved || this.registerForm.pristine || confirm('Do you want to leave the page?. Changes will be lost...');
-    }
-
-    constructor() {
-        afterNextRender(() => {
-            GeolocationService.getLocation()
-                .then((coords) => {
-                    this.registerForm.get('lat')?.setValue(coords.latitude);
-                    this.registerForm.get('lng')?.setValue(coords.longitude);
-                })
-                .catch((error) => {
-                    console.warn(error);
-                });
-        })
+        if (this.saved || this.registerForm.pristine) return true;
+            
+        const modalRef = this.modalService.open(ConfirmModalComponent);
+        modalRef.componentInstance.title = 'Changes will not be saved';
+        modalRef.componentInstance.body = 'Do you want to leave the page?. Changes will be lost...';
+        return modalRef.result.catch(() => false);
     }
 }

@@ -101,7 +101,7 @@ export class LoginComponent {
             .subscribe({
                 next: () => { this.router.navigate(['/events']); },
                 error: (error) => { 
-                    this.loginErrorCode.set(error.status); 
+                    this.loginErrorCode.set(error.status);
                 }
             });
     }
