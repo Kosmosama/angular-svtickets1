@@ -27,6 +27,7 @@ export class EventDetailComponent {
     event = input.required<MyEvent>();
     attendees = signal<User[]>([]);
     comments = signal<Comment[]>([]);
+    commentErrorCode = signal<number | null>(null);
 
     commentForm = this.fb.group({
         comment: ["", Validators.required]
@@ -36,10 +37,13 @@ export class EventDetailComponent {
         effect(() => {
             if (this.event()) {
                 this.titleService.setTitle(this.event()!.title + ' | SVtickets');
-                this.showComments(this.event().id);
                 this.showAttendees(this.event().id);
             }
         });
+    }
+
+    log(smth: any) {
+        console.log(smth);
     }
 
     /**
@@ -57,8 +61,11 @@ export class EventDetailComponent {
      * @param id - The ID of the event.
      */
     showAttendees(id: number) {
+        this.commentErrorCode.set(null);
+        
         this.eventService.getAttendees(id).subscribe((attendees) => {
             this.attendees.set(attendees);
+            this.showComments(id);
         });
     }
 
@@ -68,13 +75,20 @@ export class EventDetailComponent {
      * Resets the comment form after posting.
      */
     addComment() {
+        this.commentErrorCode.set(null);
+
         if (this.commentForm.invalid) {
             this.commentForm.markAllAsTouched();
             return;
         }
 
-        this.eventService.postComment(this.event().id, this.commentForm.get('comment')!.value).subscribe((comment) => {
-            this.comments.update((comments) => [comment, ...comments]);
+        this.eventService.postComment(this.event().id, this.commentForm.get('comment')!.value).subscribe({
+            next: (comment) => {
+                this.comments.update((comments) => [comment, ...comments]);
+            },
+            error: (error) => {
+                this.commentErrorCode.set(error.status);
+            }
         });
 
         this.commentForm.reset();
@@ -87,5 +101,3 @@ export class EventDetailComponent {
         this.router.navigate(['/events']);
     }
 }
-
-// #TODO Use rxResource to load attendees and comments (wtf)
