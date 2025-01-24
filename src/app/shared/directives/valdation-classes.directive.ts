@@ -28,12 +28,12 @@ export class ValidationClassesDirective implements OnInit {
   }
 
   inputClass = computed(() => {
-    const touched = this.touched(); // dependencia
+    this.touched(); // dependencia
     const validationClasses = this.validationClasses(); // dependencia
     this.valueChanges(); // dependencia
 
     return untracked(() => {
-      if (touched) {
+      if (this.#ngModel?.touched || this.#ngControl?.touched) {
         return this.#ngModel?.invalid || this.#ngControl?.invalid
           ? validationClasses?.invalid
           : validationClasses?.valid;

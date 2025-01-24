@@ -1,9 +1,10 @@
 import { HttpClient } from "@angular/common/http";
-import { inject, Injectable, Signal, signal, WritableSignal } from "@angular/core";
+import { inject, Injectable, PLATFORM_ID, REQUEST, Signal, signal, WritableSignal } from "@angular/core";
 import { SsrCookieService } from "ngx-cookie-service-ssr";
 import { ThirdPartyLogin, User, UserLogin } from "../../shared/interfaces/user";
 import { catchError, map, Observable, of } from "rxjs";
 import { TokenResponse } from "../../shared/interfaces/responses";
+import { isPlatformBrowser } from "@angular/common";
 
 @Injectable({
     providedIn: "root"
@@ -11,6 +12,8 @@ import { TokenResponse } from "../../shared/interfaces/responses";
 export class AuthService {
     private http = inject(HttpClient);
     private cookieService = inject(SsrCookieService);
+    private platformId = inject(PLATFORM_ID);
+    private request = inject(REQUEST);
 
     #logged: WritableSignal<boolean> = signal(false);
 
@@ -28,26 +31,6 @@ export class AuthService {
     }
 
     /**
-     * Validates the provided authentication token.
-     * @returns {Observable<boolean>} An observable emitting true if the token is valid, or false otherwise.
-     */
-    private validateToken(): Observable<boolean> {
-        return this.http
-            .get("auth/validate")
-            .pipe(
-                map(() => {
-                    this.#logged.set(true);
-                    return true;
-                }),
-                catchError(() => {
-                    this.cookieService.delete("token");
-                    this.#logged.set(false);
-                    return of(false);
-                })
-            );
-    }
-
-    /**
      * Logs in the user using either a standard login payload or a third-party login payload.
      * @param {UserLogin | ThirdPartyLogin} payload - The login payload containing user credentials or a third-party token.
      * @returns {Observable<void>} An observable that completes when the login process is done.
@@ -59,9 +42,9 @@ export class AuthService {
             .pipe(
                 map(({ accessToken }: TokenResponse) => {
                     // Replace token in cookies (at some point I found I had 3)
-                    if (this.cookieService.get("token")) 
+                    if (this.cookieService.get("token"))
                         this.cookieService.delete("token");
-                    this.cookieService.set("token", accessToken);
+                    this.cookieService.set("token", accessToken, 365, "/");
 
                     this.#logged.set(true);
                 })
@@ -86,11 +69,36 @@ export class AuthService {
     }
 
     /**
+     * Validates the provided authentication token.
+     * @returns {Observable<boolean>} An observable emitting true if the token is valid, or false otherwise.
+     */
+    private validateToken(): Observable<boolean> {
+        return this.http
+            .get("auth/validate")
+            .pipe(
+                map(() => {
+                    this.#logged.set(true);
+                    return true;
+                }),
+                catchError(() => {
+                    this.cookieService.delete("token");
+                    this.#logged.set(false);
+                    return of(false);
+                })
+            );
+    }
+
+    /**
      * Checks if the user is currently logged in.
      * @returns {Observable<boolean>} An observable emitting true if the user is logged in, or false otherwise.
      */
     isLogged(): Observable<boolean> {
-        const token = this.cookieService.get("token");
+        let token = this.cookieService.get("token");
+        if(!isPlatformBrowser(this.platformId)) {
+            token = this.request!.headers.get("cookie")?.split("; ").find((cookie) => cookie.startsWith("token="))?.split("=")[1]!;
+        } else {
+            console.log(document.cookie);
+        }
 
         // User is logged if signal is true
         if (this.#logged()) return of(true);

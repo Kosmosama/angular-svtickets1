@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { afterNextRender, Component, DestroyRef, inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { EncodeBase64Directive } from '../../shared/directives/encode-base64.directive';
@@ -69,9 +69,12 @@ export class RegisterComponent {
                 avatar: this.base64image,
             } as User)
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(() => {
-                this.saved = true;
-                this.router.navigate(['/auth/login']);
+            .subscribe({
+                next: () => {
+                    this.saved = true;
+                    this.router.navigate(['/auth/login']);
+                },
+                error: (error) => console.error(error),
             });
     }
 
@@ -86,13 +89,15 @@ export class RegisterComponent {
     }
 
     constructor() {
-        GeolocationService.getLocation()
-            .then((coords) => {
-                this.registerForm.get('lat')?.setValue(coords.latitude);
-                this.registerForm.get('lng')?.setValue(coords.longitude);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        afterNextRender(() => {
+            GeolocationService.getLocation()
+                .then((coords) => {
+                    this.registerForm.get('lat')?.setValue(coords.latitude);
+                    this.registerForm.get('lng')?.setValue(coords.longitude);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        })
     }
 }
