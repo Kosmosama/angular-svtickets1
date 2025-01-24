@@ -50,7 +50,7 @@ export class AuthService {
      * Logs out the user by clearing the authentication token and updating the logged-in state.
      */
     logout(): void {
-        this.cookieService.delete("token");
+        this.cookieService.delete("token", "/");
         this.#logged.set(false);
     }
 
@@ -76,7 +76,7 @@ export class AuthService {
                     return true;
                 }),
                 catchError(() => {
-                    this.cookieService.delete("token");
+                    this.cookieService.delete("token", "/");
                     this.#logged.set(false);
                     return of(false);
                 })
