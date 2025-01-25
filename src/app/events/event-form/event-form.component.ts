@@ -1,5 +1,5 @@
 import { Component, DestroyRef, effect, inject, input, signal } from "@angular/core";
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from "@angular/forms";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Router } from "@angular/router";
 import { MyEvent, MyEventInsert } from "../../shared/interfaces/my-event";
@@ -42,13 +42,22 @@ export class EventFormComponent implements CanComponentDeactivate {
         this.address = result.address;
     }
 
+    /**
+     * Validator function to check if the base64 image string is empty.
+     * 
+     * @returns A validation error object with `imageRequiredError` set to true if the base64 image string is not empty, otherwise null.
+     */
+    imageRequiredValidatior(): ValidatorFn {
+        return () => this.base64image ? null : { imageRequiredError: true };
+    }
+
     private fb = inject(NonNullableFormBuilder);
     eventForm = this.fb.group({
         title: ['', [Validators.required, Validators.minLength(5), Validators.pattern('^[a-zA-Z][a-zA-Z ]*$')]],
         date: ['', [Validators.required, minDateValidator(this.today)]],
         description: ['', [Validators.required]],
         price: [0, [Validators.required, Validators.min(0.1)]],
-        image: ['', [Validators.required]],
+        image: ['', [this.imageRequiredValidatior()]],
     });
 
     constructor() {
@@ -58,7 +67,7 @@ export class EventFormComponent implements CanComponentDeactivate {
                 this.eventForm.get('date')?.setValue(this.event()!.date.split(' ')[0]);
                 this.eventForm.get('description')?.setValue(this.event()!.description);
                 this.eventForm.get('price')?.setValue(this.event()!.price);
-                this.coordinates.set([this.event()!.lat, this.event()!.lng]);
+                this.coordinates.set([this.event()!.lng, this.event()!.lat]);
                 this.address = this.event()!.address;
                 this.base64image = this.event()!.image;
                 this.eventForm.markAllAsTouched();

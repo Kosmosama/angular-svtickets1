@@ -50,6 +50,10 @@ export class EventCardComponent {
             });
     }
 
+    /**
+     * Handles the event when an image is not found.
+     * Sets the error state to true.
+     */
     imageNotFound() {
         this.error.set(true);
     }

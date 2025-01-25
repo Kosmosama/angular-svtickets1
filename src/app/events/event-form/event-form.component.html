@@ -63,7 +63,7 @@
         
         @let imageErrors = eventForm.get('image')?.errors;
 
-        @if (imageErrors?.['required']) {
+        @if (imageErrors?.['imageRequiredError']) {
             <div class="invalid-feedback">An image is required.</div>
         }
     </div>
