@@ -30,3 +30,21 @@ button.btn-primary {
         white-space: pre-wrap;
     }
 }
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 16px;
+}
+
+.left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Comment, MyEvent, MyEventInsert } from '../../shared/interfaces/my-event';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { CommentResponse, CommentsResponse, EventsResponse, SingleEventResponse, UsersResponse } from '../../shared/interfaces/responses';
+import { CommentsResponse, EventsResponse, SingleEventResponse, UsersResponse } from '../../shared/interfaces/responses';
 import { User } from '../../shared/interfaces/user';
 
 @Injectable({
@@ -39,7 +39,7 @@ export class EventsService {
 
     /**
      * Fetches a certain event from the server.
-     *
+     * 
      * @param {number} id - The id of the event to fetch.
      * 
      * @returns {Promise<MyEvent>} - A promise resolving with the event data response.
@@ -60,8 +60,6 @@ export class EventsService {
      * @returns {Observable<MyEvent>} - An observable resolving to the saved event object.
      */
     saveEvent(event: MyEventInsert, id?: number): Observable<MyEventInsert> {
-        console.log(event);
-        console.log(id);
         return this.http
             .request<SingleEventResponse>(id ? "PUT" : "POST", id ? `events/${id}` : "events", { body: event })
             .pipe(map((resp: SingleEventResponse) => resp.event));

@@ -41,11 +41,6 @@ export class EventDetailComponent {
             }
         });
     }
-
-    log(smth: any) {
-        console.log(smth);
-    }
-
     /**
      * Fetches and sets the comments for the given event ID.
      * @param id - The ID of the event.

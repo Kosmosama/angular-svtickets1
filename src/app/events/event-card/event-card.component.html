@@ -1,7 +1,7 @@
 <div class="col">
     <div class="card h-100 shadow">
         <a [routerLink]="['/events', event().id]">
-            <img class="card-img-top" [src]="event().image" [alt]="event().title" />
+            <img class="card-img-top" [src]="event().image" [alt]="event().title"/>
         </a>
         <div class="card-body">
             <a class="text-decoration-none" [routerLink]="['/events', event().id]">
@@ -40,7 +40,7 @@
         <div class="card-footer text-muted row m-0">
             <div class="col-auto avatar pl-1 pr-1">
                 <a [routerLink]="event().mine ? ['/profile'] : ['/profile', event().creator.id]">
-                    <img [src]="event().creator.avatar" class="rounded-circle" [alt]="event().creator.name" />
+                    <img [src]="event().creator.avatar" class="rounded-circle" [alt]="event().creator.name"/>
                 </a>
             </div>
             <div class="col">

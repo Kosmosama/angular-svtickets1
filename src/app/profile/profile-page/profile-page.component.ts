@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, inject, input, model, signal } from '@angular/core';
 import { User, UserPasswordEdit, UserPhotoEdit, UserProfileEdit } from '../../shared/interfaces/user';
 import { OlMapDirective } from '../../ol-maps/ol-map.directive';
 import { OlMarkerDirective } from '../../ol-maps/ol-marker.directive';
@@ -21,8 +21,8 @@ export class ProfilePageComponent {
     private profileService = inject(ProfileService);
     private destroyRef = inject(DestroyRef);
 
-    user = input.required<User>();
-    
+    user = model.required<User>();
+
     /**
      * Validator function to check if the repeated password matches the original password.
      * 
@@ -52,9 +52,9 @@ export class ProfilePageComponent {
             .updateProfile({...this.profileForm.getRawValue()})
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
+                this.user.set({...this.user(), ...this.profileForm.getRawValue()});
                 this.cancelEdit();
                 this.profileForm.reset();
-                
             });
     }
 
@@ -74,12 +74,10 @@ export class ProfilePageComponent {
     }
 
     changeAvatar(base64Image: string) {
-        console.log(this.user());
         this.profileService
             .updateAvatar({ avatar: base64Image } as UserPhotoEdit)
             .subscribe((avatar) => {
-                // this.user.set({...this.user(), avatar});
-                console.log(this.user())
+                this.user.set({...this.user(), avatar});
             });
     }
 

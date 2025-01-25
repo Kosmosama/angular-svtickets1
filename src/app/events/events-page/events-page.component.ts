@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, effect, inject, input, signal } from "@angular/core";
+import { Component, DestroyRef, effect, inject, input, signal } from "@angular/core";
 import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
 import { EventCardComponent } from "../event-card/event-card.component";
 import { EventsService } from "../services/events.service";
@@ -7,13 +7,27 @@ import { debounceTime, distinctUntilChanged } from "rxjs";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { EventsResponse } from "../../shared/interfaces/responses";
 import { ProfileService } from "../../profile/services/profile.service";
+import { animate, query, stagger, style, transition, trigger } from "@angular/animations";
 
 @Component({
     selector: "events-page",
     standalone: true,
     imports: [EventCardComponent, ReactiveFormsModule],
     templateUrl: "./events-page.component.html",
-    styleUrl: "./events-page.component.css"
+    styleUrls: ["./events-page.component.css"],
+    animations: [
+        trigger('animateList', [
+            transition(':increment', [
+                query('event-card:enter', [
+                    style({ opacity: 0, transform: 'translateX(-100px)' }),
+                    stagger(
+                        100,
+                        animate('500ms ease-out', style({ opacity: 1, transform: 'none' }))
+                    ),
+                ], { optional: true }),
+            ]),
+        ]),
+    ]
 })
 export class EventsPageComponent {
     private eventsService = inject(EventsService);
@@ -25,7 +39,7 @@ export class EventsPageComponent {
     creator = input<number>();
     attending = input<number>();
     more = signal<boolean>(true);
-    
+
     searchControl = new FormControl("");
     searchValue = toSignal(
         this.searchControl.valueChanges.pipe(
@@ -37,24 +51,24 @@ export class EventsPageComponent {
     pageToLoad = signal<number>(1);
 
     filterSummary = signal<string>("");
-    
+
     constructor() {
         effect(() => {
             this.eventsService
-            .getEvents(
-                this.searchValue()!,
-                this.pageToLoad(),
-                this.orderCriteria(),
-                this.creator(),
-                this.attending()
-            )
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((response: EventsResponse) => {
-                this.more.set(response.more);
-                
-                if (this.pageToLoad() === 1) this.events.set(response.events);
-                else this.events.update((events) => [...events, ...response.events]);
-            });
+                .getEvents(
+                    this.searchValue()!,
+                    this.pageToLoad(),
+                    this.orderCriteria(),
+                    this.creator(),
+                    this.attending()
+                )
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe((response: EventsResponse) => {
+                    this.more.set(response.more);
+
+                    if (this.pageToLoad() === 1) this.events.set(response.events);
+                    else this.events.update((events) => [...events, ...response.events]);
+                });
         });
 
         effect(() => {
@@ -80,9 +94,7 @@ export class EventsPageComponent {
      * @param id The ID of the event to delete.
      */
     handleEventDeleted(id: number): void {
-        this.eventsService.deleteEvent(id)
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(() => this.events.update(events => events.filter(event => event.id !== id)));
+        this.events.update((events) => events.filter((event) => event.id !== id));
     }
 
     /**
