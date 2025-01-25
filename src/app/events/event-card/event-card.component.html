@@ -9,7 +9,7 @@
             </a>
             <p class="card-text">{{ event().description }}</p>
             @if (event().mine) {
-            <a class="btn btn-primary" [routerLink]="['/events', event().id, 'edit']">Edit</a>
+            <a class="btn btn-primary" [routerLink]="['/events', 'edit', event().id]">Edit</a>
             }
             <div class="row">
                 @if (event().mine) {

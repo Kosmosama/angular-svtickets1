@@ -51,15 +51,19 @@ export class EventsService {
     }
 
     /**
-     * Creates a new event on the server.
+     * Creates a new event or edits an existing event on the server.
+     * Uses POST to create a new event if no `id` is provided, otherwise uses PUT to edit the event.
      *
-     * @param {MyEventInsert} event - The event data to create (must exclude fields like `id`).
+     * @param {MyEventInsert} event - The event data to save.
+     * @param {number} [id] - The ID of the event to be updated.
      * 
-     * @returns {Observable<MyEvent>} - An observable resolving to the created event object.
+     * @returns {Observable<MyEvent>} - An observable resolving to the saved event object.
      */
-    addEvent(event: MyEventInsert): Observable<MyEventInsert> {
+    saveEvent(event: MyEventInsert, id?: number): Observable<MyEventInsert> {
+        console.log(event);
+        console.log(id);
         return this.http
-            .post<SingleEventResponse>("events", event)
+            .request<SingleEventResponse>(id ? "PUT" : "POST", id ? `events/${id}` : "events", { body: event })
             .pipe(map((resp: SingleEventResponse) => resp.event));
     }
 

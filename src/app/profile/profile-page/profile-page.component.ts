@@ -22,7 +22,7 @@ export class ProfilePageComponent {
     private destroyRef = inject(DestroyRef);
 
     user = input.required<User>();
-
+    
     /**
      * Validator function to check if the repeated password matches the original password.
      * 
@@ -49,12 +49,12 @@ export class ProfilePageComponent {
         }
 
         this.profileService
-            .updateProfile({...this.profileForm.getRawValue()} as UserProfileEdit)
+            .updateProfile({...this.profileForm.getRawValue()})
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((response: UserProfileEdit) => {
-                this.user().email = response.email;
-                this.user().name = response.name;
+            .subscribe(() => {
                 this.cancelEdit();
+                this.profileForm.reset();
+                
             });
     }
 
@@ -69,13 +69,18 @@ export class ProfilePageComponent {
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
                 this.cancelEdit();
+                this.passwordForm.reset();
             });
     }
 
     changeAvatar(base64Image: string) {
+        console.log(this.user());
         this.profileService
             .updateAvatar({ avatar: base64Image } as UserPhotoEdit)
-            .subscribe(() => this.user().avatar = base64Image);
+            .subscribe((avatar) => {
+                // this.user.set({...this.user(), avatar});
+                console.log(this.user())
+            });
     }
 
     showProfileInfo = signal(true);

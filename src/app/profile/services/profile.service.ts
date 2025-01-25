@@ -28,10 +28,10 @@ export class ProfileService {
      *
      * @param {UserProfileEdit} data - The data to update the user's profile with.
      * 
-     * @returns {Observable<UserProfileEdit>} An Observable that emits the updated UserProfileEdit object.
+     * @returns {Observable<void>} An Observable that completes when the profile update is successful.
      */
-    updateProfile(data: UserProfileEdit): Observable<UserProfileEdit> {
-        return this.http.put<UserProfileEdit>("users/me", data);
+    updateProfile(data: UserProfileEdit): Observable<void> {
+        return this.http.put<void>("users/me", data);
     }
 
     /**
@@ -39,10 +39,12 @@ export class ProfileService {
      *
      * @param {UserPhotoEdit} data - The data to update the user's profile photo with.
      * 
-     * @returns {Observable<UserPhotoEdit>} An Observable that emits the updated UserPhotoEdit object.
+     * @returns {Observable<string>} An Observable that emits the updated avatar image link.
      */
-    updateAvatar(data: UserPhotoEdit): Observable<UserPhotoEdit> {
-        return this.http.put<UserPhotoEdit>("users/me/photo", data);
+    updateAvatar(data: UserPhotoEdit): Observable<string> {
+        return this.http
+            .put<UserPhotoEdit>("users/me/photo", data)
+            .pipe(map((resp: UserPhotoEdit) => resp.avatar));
     }
 
     /**
@@ -50,7 +52,7 @@ export class ProfileService {
      *
      * @param {UserPasswordEdit} data - The data to update the user's password with.
      * 
-     * @returns {Observable<UserPasswordEdit>} An Observable that emits the updated UserPasswordEdit object.
+     * @returns {Observable<void>} An Observable that completes when the password update is successful.
      */
     updatePassword(data: UserPasswordEdit): Observable<void> {
         return this.http.put<void>("users/me/password", data);

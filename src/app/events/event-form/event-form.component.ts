@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from "@angular/core";
+import { Component, DestroyRef, effect, inject, input, signal } from "@angular/core";
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Router } from "@angular/router";
@@ -35,6 +35,8 @@ export class EventFormComponent implements CanComponentDeactivate {
     address = "";
     coordinates = signal<[number, number]>([-0.5, 38.5]);
 
+    event = input<MyEvent>();
+
     changePlace(result: SearchResult) {
         this.coordinates.set(result.coordinates);
         this.address = result.address;
@@ -49,19 +51,36 @@ export class EventFormComponent implements CanComponentDeactivate {
         image: ['', [Validators.required]],
     });
 
+    constructor() {
+        effect(() => {
+            if (this.event()) {
+                this.eventForm.get('title')?.setValue(this.event()!.title);
+                this.eventForm.get('date')?.setValue(this.event()!.date.split(' ')[0]);
+                this.eventForm.get('description')?.setValue(this.event()!.description);
+                this.eventForm.get('price')?.setValue(this.event()!.price);
+                this.coordinates.set([this.event()!.lat, this.event()!.lng]);
+                this.address = this.event()!.address;
+                this.base64image = this.event()!.image;
+                this.eventForm.markAllAsTouched();
+            }
+        });
+    }
+
     /**
      * Handles adding a new event by interacting with the EventsService.
      * Navigates user back to "/events" upon creation.
      */
     submitNewEvent(): void {
         const [lng, lat] = this.coordinates();
-        this.eventsService.addEvent({
+        const event: MyEventInsert = {
             ...this.eventForm.getRawValue(),
             image: this.base64image,
             address: this.address,
-            lat: 0,
-            lng: 0
-        } as MyEventInsert)
+            lat: lat,
+            lng: lng
+        };
+
+        this.eventsService.saveEvent(event, this.event()?.id)
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
                 this.saved = true;
