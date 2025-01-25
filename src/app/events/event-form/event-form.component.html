@@ -1,4 +1,9 @@
 <form action="#" class="mt-4" id="newEvent" (ngSubmit)="submitNewEvent()" [formGroup]="eventForm">
+
+    @if(error()) {
+        <div class="alert alert-danger">Unexpected error occurred.</div>
+    }
+
     <div class="mb-3">
         <label for="title" class="form-label">Title</label>
         <input type="text" class="form-control" name="title" id="title" placeholder="Enter title" formControlName="title" [validationClasses]="{valid: 'is-valid', invalid: 'is-invalid'}">
@@ -58,13 +63,17 @@
     </div>
     <div class="mb-3">
         <label for="image" class="form-label">Image</label>
-        <input type="file" class="form-control" id="image" name="image" encodeBase64 (encoded)="base64image = $event" formControlName="image" #fileInput
+        <input type="file" class="form-control" id="image" name="image" encodeBase64 (encoded)="handleEncodedImage($event)" formControlName="image" #fileInput
         [validationClasses]="{valid: 'is-valid', invalid: 'is-invalid'}" (change)="checkImage(fileInput)">
         
         @let imageErrors = eventForm.get('image')?.errors;
 
         @if (imageErrors?.['imageRequiredError']) {
             <div class="invalid-feedback">An image is required.</div>
+        }
+
+        @if (!imageErrors && !event()) {
+            <p class="text-muted">(there are no errors, this shouldn't be red, the directive isn't updating after the change)</p>
         }
     </div>
 

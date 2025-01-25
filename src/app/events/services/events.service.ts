@@ -17,8 +17,8 @@ export class EventsService {
      * @param {string} search - The search query to filter events.
      * @param {number} page - The page number for pagination.
      * @param {"distance" | "date" | "price"} order - The order to sort the events by.
-     * @param {number | null} creator - The ID of the event creator, or null if not applicable.
-     * @param {number | null} attending - The ID of the user attending, or null if not applicable.
+     * @param {number | null} [creator] - The ID of the event creator. (optional)
+     * @param {number | null} [attending] - The ID of the user attending. (optional)
      * 
      * @returns {Observable<EventsResponse>} - An observable stream containing the events response.
      */

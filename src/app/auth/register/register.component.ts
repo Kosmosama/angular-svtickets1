@@ -42,15 +42,6 @@ export class RegisterComponent {
         })
     }
 
-    /**
-     * Validator function to check if the repeated email matches the original email.
-     * 
-     * @returns A ValidatorFn that returns null if the emails match, or an object with the key `emailMismatch` set to true if they do not.
-     */
-    repeatEmailValidator(): ValidatorFn {
-        return ({ parent, value }: AbstractControl) => parent?.get('email')?.value === value ? null : { emailMismatch: true };
-    }
-
     registerForm = this.fb.group({
         name: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
@@ -60,6 +51,15 @@ export class RegisterComponent {
         lng: [0],
         avatar: ['', Validators.required],
     });
+
+    /**
+     * Validator function to check if the repeated email matches the original email.
+     * 
+     * @returns A ValidatorFn that returns null if the emails match, or an object with the key `emailMismatch` set to true if they do not.
+     */
+    repeatEmailValidator(): ValidatorFn {
+        return ({ parent, value }: AbstractControl) => parent?.get('email')?.value === value ? null : { emailMismatch: true };
+    }
 
     /**
      * Checks whether the image input change actually placed a valid image, if the image was invalid,

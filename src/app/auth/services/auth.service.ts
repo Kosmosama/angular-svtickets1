@@ -4,7 +4,7 @@ import { CookieService } from "ngx-cookie-service";
 import { catchError, map, Observable, of } from "rxjs";
 import { TokenResponse } from "../../shared/interfaces/responses";
 import { ThirdPartyLogin, User, UserLogin } from "../../shared/interfaces/user";
-import { SsrCookieService } from "../../shared/services/ssr-cookie.service";
+import { SsrCookieService } from "./ssr-cookie.service";
 
 @Injectable({
     providedIn: "root"

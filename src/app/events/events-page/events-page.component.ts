@@ -36,11 +36,14 @@ export class EventsPageComponent {
     private profileService = inject(ProfileService);
     private destroyRef = inject(DestroyRef);
 
-    events = signal<MyEvent[]>([]);
-
     creator = input<number>();
     attending = input<number>();
+    
+    events = signal<MyEvent[]>([]);
     more = signal<boolean>(true);
+    orderCriteria = signal<"distance" | "date" | "price">("distance");
+    pageToLoad = signal<number>(1);
+    filterSummary = signal<string>("");
 
     searchControl = new FormControl("");
     searchValue = toSignal(
@@ -49,10 +52,7 @@ export class EventsPageComponent {
             distinctUntilChanged()
         )
     );
-    orderCriteria = signal<"distance" | "date" | "price">("distance");
-    pageToLoad = signal<number>(1);
 
-    filterSummary = signal<string>("");
 
     constructor() {
         effect(() => {

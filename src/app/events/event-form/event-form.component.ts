@@ -1,20 +1,20 @@
-import { Component, DestroyRef, effect, inject, input, signal } from "@angular/core";
-import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from "@angular/forms";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Router } from "@angular/router";
-import { MyEvent, MyEventInsert } from "../../shared/interfaces/my-event";
-import { EncodeBase64Directive } from "../../shared/directives/encode-base64.directive";
-import { EventsService } from "../services/events.service";
-import { CanComponentDeactivate } from "../../shared/interfaces/can-component-deactivate";
-import { ValidationClassesDirective } from "../../shared/directives/valdation-classes.directive";
-import { minDateValidator } from "../../shared/directives/min-date.directive";
 import { DatePipe } from "@angular/common";
+import { Component, DestroyRef, effect, inject, input, signal } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { NonNullableFormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from "@angular/forms";
+import { Router } from "@angular/router";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { GaAutocompleteDirective } from "../../ol-maps/ga-autocomplete.directive";
 import { OlMapDirective } from "../../ol-maps/ol-map.directive";
 import { OlMarkerDirective } from "../../ol-maps/ol-marker.directive";
-import { GaAutocompleteDirective } from "../../ol-maps/ga-autocomplete.directive";
 import { SearchResult } from "../../ol-maps/search-result";
-import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { EncodeBase64Directive } from "../../shared/directives/encode-base64.directive";
+import { minDateValidator } from "../../shared/directives/min-date.directive";
+import { ValidationClassesDirective } from "../../shared/directives/valdation-classes.directive";
+import { CanComponentDeactivate } from "../../shared/interfaces/can-component-deactivate";
+import { MyEvent, MyEventInsert } from "../../shared/interfaces/my-event";
 import { ConfirmModalComponent } from "../../shared/modals/confirm-modal/confirm-modal.component";
+import { EventsService } from "../services/events.service";
 
 @Component({
     selector: "event-form",
@@ -29,26 +29,18 @@ export class EventFormComponent implements CanComponentDeactivate {
     private router = inject(Router);
     private modalService = inject(NgbModal);
 
+    event = input<MyEvent>();
+
     saved = false;
     today: string = new Date().toISOString().split('T')[0];
     base64image = "";
     address = "";
     coordinates = signal<[number, number]>([-0.5, 38.5]);
-
-    event = input<MyEvent>();
+    error = signal<number | null>(null);
 
     changePlace(result: SearchResult) {
         this.coordinates.set(result.coordinates);
         this.address = result.address;
-    }
-
-    /**
-     * Validator function to check if the base64 image string is empty.
-     * 
-     * @returns A validation error object with `imageRequiredError` set to true if the base64 image string is not empty, otherwise null.
-     */
-    imageRequiredValidatior(): ValidatorFn {
-        return () => this.base64image ? null : { imageRequiredError: true };
     }
 
     private fb = inject(NonNullableFormBuilder);
@@ -76,6 +68,15 @@ export class EventFormComponent implements CanComponentDeactivate {
     }
 
     /**
+     * Validator function to check if the base64 image string is empty.
+     * 
+     * @returns A validation error object with `imageRequiredError` set to true if the base64 image string is not empty, otherwise null.
+     */
+    imageRequiredValidatior(): ValidatorFn {
+        return () => this.base64image ? null : { imageRequiredError: true };
+    }
+
+    /**
      * Handles adding a new event by interacting with the EventsService.
      * Navigates user back to "/events" upon creation.
      */
@@ -91,9 +92,14 @@ export class EventFormComponent implements CanComponentDeactivate {
 
         this.eventsService.saveEvent(event, this.event()?.id)
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(() => {
-                this.saved = true;
-                this.router.navigate(['/events']);
+            .subscribe({
+                next: () => {
+                    this.saved = true;
+                    this.router.navigate(['/events']);
+                },
+                error: (error) => {
+                    this.error.set(error.status);
+                }
             });
     }
 
@@ -120,5 +126,17 @@ export class EventFormComponent implements CanComponentDeactivate {
      */
     checkImage(fileInputElement: HTMLInputElement) {
         if (!fileInputElement.files || fileInputElement.files.length === 0) this.base64image = '';
+        this.eventForm.get('image')?.updateValueAndValidity();
+    }
+
+    /**
+     * Handles the encoded image by setting the base64 string to the `base64image` property
+     * and updating the validity of the 'image' form control in the event form.
+     *
+     * @param base64 - The base64 encoded string of the image.
+     */
+    handleEncodedImage(base64: string) {
+        this.base64image = base64;
+        this.eventForm.get('image')?.updateValueAndValidity();
     }
 }

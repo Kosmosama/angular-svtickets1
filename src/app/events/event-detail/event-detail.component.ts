@@ -25,6 +25,7 @@ export class EventDetailComponent {
     private fb = inject(NonNullableFormBuilder);
 
     event = input.required<MyEvent>();
+
     attendees = signal<User[]>([]);
     comments = signal<Comment[]>([]);
     commentErrorCode = signal<number | null>(null);
@@ -41,6 +42,7 @@ export class EventDetailComponent {
             }
         });
     }
+
     /**
      * Fetches and sets the comments for the given event ID.
      * @param id - The ID of the event.

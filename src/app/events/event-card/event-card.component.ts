@@ -23,6 +23,7 @@ export class EventCardComponent {
     event = input.required<MyEvent>();
     deleted = output<number>();
     attend = output<boolean>();
+    
     error = signal<boolean>(false);
 
     /**

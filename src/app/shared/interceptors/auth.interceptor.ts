@@ -1,6 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { SsrCookieService } from '../services/ssr-cookie.service';
+import { SsrCookieService } from '../../auth/services/ssr-cookie.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const token = inject(SsrCookieService).getCookie('token');
