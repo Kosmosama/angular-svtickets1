@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, DestroyRef, inject, input, output, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, input, output, signal, viewChild } from '@angular/core';
 import { MyEvent } from '../../shared/interfaces/my-event';
 import { DatePipe, NgClass } from '@angular/common';
 import { CurrencyPipe } from '../../shared/pipes/currency.pipe';
@@ -23,6 +23,7 @@ export class EventCardComponent {
     event = input.required<MyEvent>();
     deleted = output<number>();
     attend = output<boolean>();
+    error = signal<boolean>(false);
 
     /**
      * Deletes himself from server and emits its own id upon deletion.
@@ -47,5 +48,9 @@ export class EventCardComponent {
                 this.attend.emit(updatedStatus);
                 this.cdr.markForCheck();
             });
+    }
+
+    imageNotFound() {
+        this.error.set(true);
     }
 }

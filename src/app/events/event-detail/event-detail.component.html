@@ -4,6 +4,10 @@
             <div class="mt-4">
                 <event-card [event]="event()!" (deleted)="goBack()" (attend)="showAttendees(event().id)"></event-card>
             </div>
+
+            <div class="mt-4 mb-4">
+                <button class="btn btn-success" (click)="goBack()">Go back</button>
+            </div>
             
             <div class="card mt-4">
                 <div class="card-header bg-success text-white" id="address">{{ event().address || 'No address available' }}</div>
@@ -79,9 +83,5 @@
                 </ul>
             </div>
         }
-
-        <div class="mt-4 mb-4">
-            <button class="btn btn-success" (click)="goBack()">Go back</button>
-        </div>
     </div>
 </div>
